@@ -5,7 +5,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import axios, { all } from 'axios';
 import {Alert, Modal, StyleSheet, Text, Pressable, View,Button,ScrollView,Image } from 'react-native';
 
-import { PaperProvider,Dialog,Card } from 'react-native-paper'; 
+import { PaperProvider,Dialog,Divider } from 'react-native-paper'; 
 
 
 
@@ -170,14 +170,16 @@ export default function Scanner () {
                                         <Image style = {styles.modal_image}/>
 
                                         <View>
-                                            <Text style={styles.ing}>{brandName}</Text>
+                                        <Text style={styles.ing}>{brandName}</Text>
                                         </View>
+                                          
+                                        
                                         
 
                                     </View>    
                                     
 
-                                    
+                                    <Divider /> 
                                     
                                     
                                     
