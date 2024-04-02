@@ -7,6 +7,8 @@ import Profile from './Profile';
 import Scanner from './Scanner';
 import { NavigationContainer } from '@react-navigation/native';
 import CartScreen from './CartScreen';
+import HomeScreen from './HomeScreen';
+import ExploreScreen from './Explore';
 
 
 
@@ -14,11 +16,11 @@ import CartScreen from './CartScreen';
 
 const scan = () => <Scanner />;
 
-const home = () => <Text>Home</Text>
+const home = () => <HomeScreen />;
 
 const cart = () => <CartScreen/>;
 
-const explore = () => <Text>Profile</Text>;
+const explore = () => <ExploreScreen /> ;
 
 const profile = () => <Profile />;
 
@@ -44,7 +46,7 @@ const Footer = () => {
   });
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider> 
       
         <BottomNavigation
         navigationState={{ index, routes }}

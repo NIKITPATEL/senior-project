@@ -80,20 +80,63 @@ app.get('/savefood/:userId', async (req, res) => {
 });
 
 // Get user preferences
-app.get('/user/preferences/:userId', async (req, res) => {
+app.get('/userpreferences/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log('Prefernce user',userId)
     const result = await pool.query(
       'SELECT dp.PreferenceName FROM DietaryPreferences dp INNER JOIN UserDietaryPreferences udp ON dp.PreferenceID = udp.PreferenceID WHERE udp.UserID = $1',
       [userId]
     );
-    const preferences = result.rows.map(row => row.PreferenceName);
+    
+    const preferences = result.rows.map(row => row.preferencename);
+    console.log(preferences)
     res.status(200).json(preferences);
   } catch (error) {
     console.error('Error fetching preferences:', error);
     res.status(500).json({ message: 'Error fetching preferences.' });
   }
 });
+
+//Get the user allergies
+app.get('/userallergies/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log('User allergy',userId)
+    const result = await pool.query(
+      'SELECT a.AllergenName FROM Allergens a INNER JOIN UserAllergens ua ON a.AllergenID = ua.AllergenID WHERE ua.UserID = $1',
+      [userId]
+    );
+    
+    const preferences = result.rows.map(row => row.allergenname);
+    console.log('Send Allergy: ',preferences)
+    res.status(200).json(preferences);
+  } catch (error) {
+    console.error('Error fetching preferences:', error);
+    res.status(500).json({ message: 'Error fetching preferences.' });
+  }
+});
+
+app.get('/total-nutrients/:userId', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+    // Query the database to calculate total nutritional values for the user and current date
+    const result = await pool.query('SELECT SUM(calories) AS totalCalories, SUM(protein) AS totalProtein, SUM(carbs) AS totalCarbs, SUM(fats) AS totalFats FROM nutrients WHERE UserID = $1 AND meal_date = $2', [userId, currentDate]);
+
+    // Extract the total nutritional values from the result
+    const { totalcalories, totalprotein, totalcarbs, totalfats } = result.rows[0];
+
+    res.status(200).json({totalcalories, totalprotein, totalcarbs, totalfats });
+  } catch (error) {
+    console.error('Error fetching total nutrients:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+
 
 
 
@@ -212,11 +255,11 @@ app.post('/user/preferences', async (req, res) => {
     for (const preferenceName of preferences) {
       
       // Lookup the PreferenceID for the given preferenceName
-      const { rows } = await pool.query('SELECT PreferenceID FROM DietaryPreferences WHERE PreferenceName = $1', [preferenceName]);
+      const { rows:dietaryRows } = await pool.query('SELECT PreferenceID FROM DietaryPreferences WHERE PreferenceName = $1', [preferenceName]);
       
-      if (rows.length > 0) {
-        console.log(rows)
-        const preferenceId = rows[0].preferenceid;
+      if (dietaryRows.length > 0) {
+        console.log(dietaryRows)
+        const preferenceId = dietaryRows[0].preferenceid;
         console.log(preferenceId)
         // Insert the UserDietaryPreferences
         await pool.query('INSERT INTO UserDietaryPreferences (UserID, PreferenceID) VALUES ($1, $2)', [userId, preferenceId]);
@@ -228,6 +271,49 @@ app.post('/user/preferences', async (req, res) => {
     res.status(500).json({ message: 'Error saving preferences.' });
   }
 });
+
+app.post('/user/allergies',async(req,res)=> {
+
+  try{
+    const{userId,allergies} = req.body;
+    for(const allergyName of allergies){
+      // Check if the user has allready the allergy saved
+       const {rows} = await pool.query('SELECT * FROM UserAllergens WHERE  UserId = $1 and AllergenID = (SELECT AllergenID FROM Allergens WHERE AllergenName = $2)',[userId,allergyName]);
+      if(rows.length === 0) {
+        // If the user doesn't have the allergy then insert it
+        const {  rows: allergensRows} = await pool.query('SELECT * FROM Allergens WHERE AllergenName =$1',[allergyName]);
+        if(allergensRows.length > 0){
+          const allergenId = allergensRows[0].allergenid;
+          // INsert into Userallergens
+          await pool.query('INSERT INTO UserAllergens (UserID,AllergenID) VALUES ($1,$2)',[userId,allergenId]);
+
+        }
+
+    }
+
+  }
+  res.status(200).json({message:'Allergies saved successfully'});
+    
+
+  }catch (error){
+    console.error('Error saving allergies:', error);
+    res.status(500).json({ message: 'Error saving allergies.' });
+  }
+})
+
+app.post('add-meal',async (req,res) => {
+  try{
+    const {userId,calories,protein,carbs,fats} = req.body;
+
+    //Inser the Query 
+    const insertQuery = await pool.query('INSERT INTO nutrients (UserID, calories, protein, carbs, fats, meal_date)VALUES ($1, $2, $3, $4, $5, CURRENT_DATE)',[[userId, calories, protein, carbs, fats]]);
+    res.status(200).json({message:'Meal added successfully'});
+
+  }catch (error) {
+    console.error('Error adding meal: ',error);
+    res.status(500).json({message:'Internal server error'});
+  }
+})
 
 
 

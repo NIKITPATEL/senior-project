@@ -35,6 +35,10 @@ export default function DietaryScreen() {
     { name: 'Vegan' ,source: require('../assets/vegetarian.png') },
     { name: 'No beef' ,source: require('../assets/beef.png') },
     { name: 'No pork' ,source: require('../assets/pork.png') },
+    { name: 'Low Sugar' ,source: require('../assets/no-egg.png') },
+    { name: 'Halal' ,source: require('../assets/no-egg.png') },
+    { name: 'Organic' ,source: require('../assets/no-egg.png') },
+    
     
   ]
 

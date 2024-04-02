@@ -50,6 +50,7 @@ CREATE TABLE UserAllergens (
     UserAllergenID SERIAL PRIMARY KEY,
     UserID INT NOT NULL,
     AllergenID INT NOT NULL,
+    Tlevel VARCHAR(255),
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (AllergenID) REFERENCES Allergens(AllergenID)
 );
@@ -70,3 +71,23 @@ CREATE TABLE UserFoodPreferences (
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (ProductID) REFERENCES FoodProducts(ProductID)
 );
+
+CREATE TABLE nutrients (
+    meal_id SERIAL PRIMARY KEY,
+    UserID INT NOT NULL,
+    calories DECIMAL,
+    protein DECIMAL,
+    carbs DECIMAL,
+    fats DECIMAL,
+    meal_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+
+
+
+INSERT INTO Allergens (AllergenName) VALUES ('Eggs'),('Fish'),
+('Milk'),('Onions'),('Wheat'),('Corn'),('Peanuts'),('Almonds'),
+('Walnuts'),('Shrimp'),('Crab'),('Lobster'),('Sesame'),('Soy'),
+('Mustard');
+
