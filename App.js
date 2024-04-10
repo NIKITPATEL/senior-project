@@ -13,6 +13,7 @@ import CartScreen from './components/CartScreen';
 import SearchCali from './components/SearchCalir';
 import RecipeScreen from './components/RecipeScreen';
 import Scanner from './components/Scanner';
+import CustomAllergy from './components/CustomAllergy';
 
 
 import Footer from './components/Footer';
@@ -34,10 +35,10 @@ const App = () => {
           
           <Stack.Navigator screenOptions={{headerShown: false}}>
     
-      {/* <Stack.Screen name="Feed" component={Feed} /> */}
+              {/*<Stack.Screen name="Feed" component={Feed} />   */}
               <Stack.Screen name= 'welcome'   component={WelcomeScreen} />
               <Stack.Screen name= 'login'   component={LoginScreen} /> 
-              <Stack.Screen name='register' component={RegisterScreen} />   
+              <Stack.Screen name='register' component={RegisterScreen} /> 
               <Stack.Screen name="main" component={Footer} />
               <Stack.Screen name="dietary" component={DietaryScreen} />
               <Stack.Screen name='allergy' component={Allergy} />
@@ -45,6 +46,7 @@ const App = () => {
               <Stack.Screen name='searchcali' component={SearchCali} />
               <Stack.Screen name='recipesearch' component={RecipeScreen} />
               <Stack.Screen name='scanner' component={Scanner} />
+              <Stack.Screen name='customAllergy' component={CustomAllergy} />
           
         
         

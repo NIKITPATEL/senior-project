@@ -1,12 +1,14 @@
-import React from 'react';
-import { View, Text, SafeAreaView, Image, StyleSheet,ScrollView,TouchableOpacity } from 'react-native';
-import { IconButton, Card, Button } from 'react-native-paper';
+import React,{useState} from 'react';
+import { View, Text, SafeAreaView, Image, StyleSheet,ScrollView,TouchableOpacity,Modal} from 'react-native';
+import { IconButton, Card, Button,Icon } from 'react-native-paper';
 import SearchCali from './SearchCalir';
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from './UserContext';
+
 
 const cardColors = ['#EBBC13', '#A1D72D', '#2DA1D7', '#FF5733', '#8A2BE2'];
 
-const DishCard = ({ dishData, cardColor }) => {
+const DishCard = ({ dishData, cardColor,onCardPress }) => {
     const styles = StyleSheet.create({
       dishCard: {
         marginHorizontal: 10,
@@ -27,7 +29,8 @@ const DishCard = ({ dishData, cardColor }) => {
         position: 'absolute',
         top: 0,
         right: 0,
-        borderTopRightRadius: 10,
+        borderTopLeftRadius:10,
+        borderBottomRightRadius:10,
       },
       detailsContainer: {
         paddingTop: 45, // Adjusted based on the smaller card height
@@ -35,7 +38,7 @@ const DishCard = ({ dishData, cardColor }) => {
         height: '50%', // Adjusted based on the smaller card height
       },
       dishName: {
-        fontSize: 14, // Adjusted font size
+        fontSize: 17, // Adjusted font size
         fontWeight: 'bold',
         marginBottom: 5,
       },
@@ -59,6 +62,7 @@ const DishCard = ({ dishData, cardColor }) => {
     });
   
     return (
+      
       <Card style={styles.dishCard}>
         <View style={styles.imageContainer}>
           <Image source={dishData.image} style={styles.dishImage} />
@@ -72,45 +76,100 @@ const DishCard = ({ dishData, cardColor }) => {
                 icon="star"
                 size={15}
                 style={styles.starIcon}
-                color={index < dishData.rating ? 'gold' : 'gray'}
+                iconColor={index < dishData.rating ? 'gold' : 'gray'}
               />
             ))}
           </View>
           <View style={styles.timeServingsContainer}>
-            <Text style={styles.timeText}>Time: {dishData.timeToMake}</Text>
-            <Text style={styles.servingsText}>Servings: {dishData.servings}</Text>
+            <View style ={{flexDirection:'row',alignItems:'center'}}>
+              <IconButton icon="clock-time-three" size={20}></IconButton>
+              <Text style={{fontSize:12}}>{dishData.timeToMake}</Text>
+
+            </View>
+            <View style ={{flexDirection:'row',alignItems:'center'}}>
+              <IconButton icon="room-service" size={20} />
+              <Text style={{fontSize:12}}>{dishData.servings}</Text>
+
+            </View>
+            
           </View>
         </View>
       </Card>
+      
     );
   };
   
 
 const ExploreScreen = () => {
-  // Sample user name
-  const userName = "John";
+  const {userId,username} = useUser();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDish, setSelectedDish] = useState(null); // Store the selected dish data
+
+  const onCardPress = (dishData) => {
+    setSelectedDish(dishData);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setSelectedDish(null);
+    setModalVisible(false);
+  };
   const dishes = [
     {
-      name: 'Grilled Salmon',
-      rating: 4.5,
-      timeToMake: '30 min',
-      servings: 2,
-      image: require('../assets/salmon.png'),
-    },
-    {
-      name: 'Vegetable Stir-fry',
-      rating: 4.2,
-      timeToMake: '25 min',
-      servings: 3,
-      image: require('../assets/stirfry.png'),
-    },
-    {
-      name: 'Chicken Parmesan',
-      rating: 4.7,
-      timeToMake: '40 min',
-      servings: 4,
-      image: require('../assets/chickenparmesan.png'),
-    },
+          name: 'Grilled Salmon',
+          rating: 4,
+          timeToMake: '30 min',
+          servings: 2,
+          image: require('../assets/salmon.png'),
+          ingredients: ['Salmon fillet', 'Olive oil', 'Lemon', 'Salt', 'Pepper'],
+          steps: ['Preheat grill to medium-high heat.', 'Brush salmon with olive oil, season with salt and pepper.', 'Grill salmon for 4-5 minutes per side until cooked through.', 'Serve with lemon wedges.']
+      },
+      {
+          name: 'Vegetable Stir-fry',
+          rating: 4,
+          timeToMake: '25 min',
+          servings: 3,
+          image: require('../assets/stirfry.png'),
+          ingredients: ['Assorted vegetables (e.g., bell peppers, broccoli, carrots)', 'Soy sauce', 'Garlic', 'Ginger', 'Vegetable oil', 'Salt', 'Pepper'],
+          steps: ['Slice vegetables into bite-sized pieces.', 'Heat vegetable oil in a wok or large skillet over medium-high heat.', 'Add minced garlic and ginger, stir-fry for 30 seconds.', 'Add vegetables, season with salt and pepper, stir-fry until tender-crisp.', 'Drizzle soy sauce, toss well, and cook for another minute.', 'Serve hot.']
+      },
+      {
+          name: 'Chicken Parmesan',
+          rating: 5,
+          timeToMake: '40 min',
+          servings: 4,
+          image: require('../assets/chickenparmesan.png'),
+          ingredients: ['Chicken breasts', 'Eggs', 'Breadcrumbs', 'Parmesan cheese', 'Marinara sauce', 'Mozzarella cheese', 'Salt', 'Pepper', 'Olive oil'],
+          steps: ['Preheat oven to 375°F (190°C).', 'Season chicken breasts with salt and pepper.', 'Dip each chicken breast in beaten eggs, then coat with breadcrumbs mixed with grated Parmesan cheese.', 'Heat olive oil in a skillet over medium heat, cook chicken until golden brown on both sides.', 'Transfer chicken to a baking dish, cover with marinara sauce and mozzarella cheese.', 'Bake for 20-25 minutes until cheese is bubbly and chicken is cooked through.', 'Serve hot with pasta or salad.']
+      },
+      {
+          name: 'Beef Tacos',
+          rating: 4,
+          timeToMake: '35 min',
+          servings: 4,
+          image: require('../assets/beeftacos.jpeg'),
+          ingredients: ['Ground beef', 'Taco seasoning', 'Tortillas', 'Lettuce', 'Tomatoes', 'Onions', 'Cheddar cheese', 'Sour cream', 'Salsa'],
+          steps: ['Cook ground beef in a skillet over medium heat until browned.', 'Stir in taco seasoning according to package instructions.', 'Warm tortillas in a dry skillet or microwave.', 'Fill tortillas with seasoned beef, lettuce, tomatoes, onions, and cheddar cheese.', 'Top with sour cream and salsa.', 'Serve hot.']
+      },
+      {
+          name: 'Shrimp Scampi',
+          rating: 3.5,
+          timeToMake: '20 min',
+          servings: 2,
+          image: require('../assets/shrimpScampi.jpeg'),
+          ingredients: ['Shrimp', 'Linguine pasta', 'Butter', 'Garlic', 'White wine', 'Lemon juice', 'Parsley', 'Salt', 'Pepper'],
+          steps: ['Cook linguine pasta according to package instructions.', 'In a skillet, melt butter over medium heat.', 'Add minced garlic and cook until fragrant.', 'Add shrimp, white wine, lemon juice, salt, and pepper.', 'Cook until shrimp turn pink and are cooked through, about 4-5 minutes.', 'Toss cooked linguine with shrimp mixture.', 'Garnish with chopped parsley and serve hot.']
+      },
+      {
+          name: 'Vegetable Lasagna',
+          rating: 4.4,
+          timeToMake: '1 hr 15 min',
+          servings: 6,
+          image: require('../assets/VegLasagna.jpeg'),
+          ingredients: ['Lasagna noodles', 'Marinara sauce', 'Ricotta cheese', 'Spinach', 'Zucchini', 'Mushrooms', 'Onion', 'Garlic', 'Mozzarella cheese', 'Parmesan cheese', 'Olive oil', 'Salt', 'Pepper'],
+          steps: ['Preheat oven to 375°F (190°C).', 'Cook lasagna noodles according to package instructions.', 'In a skillet, sauté chopped onion and minced garlic in olive oil until softened.', 'Add sliced mushrooms and diced zucchini, cook until tender.', 'Stir in spinach until wilted.', 'In a baking dish, layer marinara sauce, cooked lasagna noodles, ricotta cheese, vegetable mixture, and shredded mozzarella cheese.', 'Repeat layers, finishing with a layer of marinara sauce and a sprinkle of Parmesan cheese on top.', 'Cover with foil and bake for 45 minutes.', 'Remove foil and bake for an additional 15 minutes until bubbly and golden brown.', 'Let it cool for a few minutes before serving.']
+      },
+  
   ];
 
   const navigation = useNavigation();
@@ -123,8 +182,8 @@ const ExploreScreen = () => {
       <ScrollView>
         <View style={styles.container}>
             <View style={styles.leftContainer}>
-            <Text style={styles.bigText}>Hello {userName}</Text>
-            <Text style={styles.smallText}>Let's start your day with a healthy meal</Text>
+            <Text style={styles.bigText}>Hello, {username}</Text>
+            <Text style={styles.smallText}>Let's start your day with a healthy meal!</Text>
             </View>
 
             
@@ -143,11 +202,57 @@ const ExploreScreen = () => {
             </View>
         </View>
 
+        
         <ScrollView horizontal style={styles.cardContainer}>
-          {dishes.map((dish, index) => (
-            <DishCard key={index} dishData={dish} cardColor={cardColors[index % cardColors.length]} />
-          ))}
+            {dishes.map((dish, index) => (
+              <TouchableOpacity key={index} onPress={() => onCardPress(dish)}>
+              <DishCard key={index} dishData={dish} cardColor={cardColors[index % cardColors.length]} />
+              </TouchableOpacity>
+            ))}
         </ScrollView>
+        
+        
+
+            <Modal
+              animationType="slide"
+              transparent={false}
+              visible={modalVisible}
+              onRequestClose={closeModal}
+            >
+              <View style={styles.modalContainer}>
+                {/* Close button */}
+                <IconButton
+                  icon="close"
+                  size={30}
+                  onPress={closeModal}
+                  style={styles.closeButton}
+                />
+                {/* Dish name and meal image */}
+                <View style={styles.mealImageContainer}>
+                  <Text style={styles.modalTitle}>{selectedDish?.name}</Text>
+                  <Image source={selectedDish?.image} style={styles.mealImage} />
+                </View>
+                {/* Ingredients */}
+                <Text style={styles.modalSubtitle}>Ingredients:</Text>
+                <Text style={styles.ingredient}>{selectedDish?.ingredients.join(', ')}</Text>
+
+                <View style={{flexDirection: 'row',alignItems: 'center', justifyContent:'space-between',marginTop:10, }}>
+                  
+                  <Image source={require('../assets/cooking.png')} style={styles.cook} />
+                  <Image source={require('../assets/seasoning.png')} style={styles.cook}/>
+                  <Image source={require('../assets/sauce.png')} style={styles.cook}/>
+                  <Image source={require('../assets/hot-pot.png')} style={styles.cook}/>
+                </View>
+                {/* Steps */}
+                <Text style={styles.modalSubtitle}>Steps:</Text>
+                <ScrollView style={styles.ingredientsContainer}>
+                  {selectedDish?.steps.map((step, index) => (
+                    <Text key={index} style={styles.ingredient}>{step}</Text>
+                  ))}
+                </ScrollView>
+
+              </View>
+            </Modal>
 
             <View style={styles.contentContainer}>
                 {/* Paragraph */}
@@ -202,12 +307,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bigText: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   smallText: {
-    fontSize: 13,
+    fontSize: 15,
   },
   userIcon: {
     marginRight: -10, // Adjust as needed
@@ -230,6 +335,7 @@ const styles = StyleSheet.create({
         top: 0,
         right: 0,
         borderTopRightRadius: 10,
+
     },
     detailsContainer: {
         paddingTop: 45, // Adjusted based on the smaller card height
@@ -251,12 +357,6 @@ const styles = StyleSheet.create({
     timeServingsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-    },
-    timeText: {
-        fontSize: 12, // Adjusted font size
-    },
-    servingsText: {
-        fontSize: 12, // Adjusted font size
     },
     image: {
         flex: 1,
@@ -282,6 +382,12 @@ const styles = StyleSheet.create({
       image2: {
         width: 100,
         height: 100,
+        resizeMode: 'cover',
+        borderRadius: 10,
+      },
+      cook:{
+        width: 50,
+        height: 50,
         resizeMode: 'cover',
         borderRadius: 10,
       },
@@ -312,9 +418,57 @@ const styles = StyleSheet.create({
         fontSize: 16,
     
       },
+      modalContainer: {
+        flex: 1,
+        padding: 20,
+      },
+      closeButton: {
+        alignSelf: 'flex-end',
+        marginBottom: 20,
+      },
+      modalTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+      },
+      modalSubtitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 20,
+      },
+      mealImageContainer: {
+        alignItems: 'center',
+        marginBottom: 10,
+      },
+      mealImage: {
+        width: "90%",
+        height: 200,
+        borderRadius: 10,
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        
+      },
+      ingredientsContainer: {
+        maxHeight: 200,
+      },
+      ingredient: {
+        fontSize: 16,
+        marginBottom: 10,
+      },
+      stepsContainer: {
+        maxHeight: 300,
+      },
+      step: {
+        fontSize: 16,
+        marginBottom: 10,
+      },
       
-    
-    
 
 });
 

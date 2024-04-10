@@ -124,7 +124,7 @@ const CartScreen = () => {
         <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={false}>
           {/* Render CartItem components dynamically based on products array */}
           {cartItems.map((item, index) => (
-            <CartItem key={index} image={item.photo} productName={item.name} />
+            <CartItem key={index} image={item.photo} productName={item.name} onPress={()=> handleCartPress(item.id)}/>
           ))}
         </ScrollView>
       </View>
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     paddingHorizontal: 10, // Add horizontal padding
     paddingTop: 20, // Add top padding
+    
   },
   scrollContainer: {
     flexDirection: 'row',

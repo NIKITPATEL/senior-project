@@ -2,12 +2,19 @@ import React,{useState} from 'react';
 import { View, Text, Image, StyleSheet,SafeAreaView } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import axios from 'axios';
 
-const CartItem = ({ image, productName }) => {
-  const [isClicked, setIsClicked] = useState(false);
+const CartItem = ({ image, productName,onPress }) => {
+  const [isClickedHeart, setIsClickedHeart] = useState(false);
+  const [isClickedCart, setIsClickedCart] = useState(false);
 
-  const handlePress = () => {
-    setIsClicked(!isClicked);
+  const handleHeartPress = () => {
+    setIsClickedHeart(!isClickedHeart);
+  };
+  const handleCartPress = async (itemId) => {
+    setIsClickedCart(!isClickedCart);
+    
+
   };
 
   
@@ -27,8 +34,8 @@ const CartItem = ({ image, productName }) => {
             <IconButton
               icon="heart"
               size={20}
-              iconColor={isClicked ? 'pink' : 'red'}
-              onPress={handlePress}
+              iconColor={isClickedHeart ? 'green' : 'pink'}
+              onPress={handleHeartPress}
             />
     
 
@@ -36,8 +43,8 @@ const CartItem = ({ image, productName }) => {
               <IconButton 
               icon="cart" 
               size={20} 
-              iconColor={isClicked ? 'blue' : 'green'} 
-              onPress={handlePress} />
+              iconColor={isClickedCart ? 'green' : 'grey'} 
+              onPress={onPress} />
             </View>
         </View>
     

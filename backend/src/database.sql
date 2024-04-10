@@ -24,6 +24,18 @@ CREATE TABLE ScannedFoods (
 
 
 
+
+CREATE TABLE UserNutrients (
+    user_nutrient_id SERIAL PRIMARY KEY,
+    UserID INT NOT NULL,
+    nutrient_name VARCHAR(50) NOT NULL,
+    nutrient_min FLOAT NOT NULL,
+    nutrient_max FLOAT NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    UNIQUE(UserID, nutrient_name)
+);
+
+
 -- Create the DietaryPreferences table
 CREATE TABLE DietaryPreferences (
     PreferenceID SERIAL PRIMARY KEY,
@@ -79,9 +91,12 @@ CREATE TABLE nutrients (
     protein DECIMAL,
     carbs DECIMAL,
     fats DECIMAL,
+    sugar DECIMAL,
     meal_date DATE DEFAULT CURRENT_DATE,
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
+
+
 
 
 

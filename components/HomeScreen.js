@@ -13,15 +13,15 @@ import { AntDesign } from '@expo/vector-icons';
 const HomeScreen = (props) => {
 
     const[searchQuery,setSearchQuery] = React.useState('');
-    const [totalNutrients, setTotalNutrients] = useState({ totalcalories: 0, totalprotein: 0, totalcarbs: 0, totalfats: 0 });
+    const [totalNutrients, setTotalNutrients] = useState({ totalcalories: 0, totalprotein: 0, totalcarbs: 0, totalfats: 0,totalsugar: 0 });
     const {username,userId} = useUser();
     const navigation = useNavigation();
     const animatedOpacity = React.useState(new Animated.Value(0))[0];
    
 
     
-    const totalNutrientValues = [600,700,900,90];
-    const sliceColor = ['#fbd203', '#ffb300', '#ff9100', '#ff6c00'];
+    const totalNutrientValues = [600,700,900,90,800];
+    const sliceColor = ['#fbd203', '#ffb300', '#ff9100', '#ff6c00','#ff6c00'];
 
     useEffect(() => {
       console.log('Home :', userId);
@@ -102,6 +102,7 @@ const HomeScreen = (props) => {
             <Text style={styles.label}>Total Protein: {totalNutrients.totalprotein} g</Text>
             <Text style={styles.label}>Total Carbs: {totalNutrients.totalcarbs} g</Text>
             <Text style={styles.label}>Total Fats: {totalNutrients.totalfats} g</Text>
+            <Text style={styles.label}>Total Sugar: {totalNutrients.totalfats} g</Text>
           </View>
         </View>
       </View>
@@ -348,7 +349,7 @@ const styles = StyleSheet.create({
     marginLeft: 5, // Adjust spacing between icon and text
     color: '#030303',
     fontSize: 12,
-    fontFamily: 'Roboto',
+    
   },
   cardText2: {
     top: 70,
@@ -356,7 +357,7 @@ const styles = StyleSheet.create({
     marginLeft: 5, // Adjust spacing between icon and text
     color: '#030303',
     fontSize: 16,
-    fontFamily: 'Roboto',
+    
     fontWeight: '600',
   },
   progressBarContainer: {

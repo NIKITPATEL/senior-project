@@ -39,8 +39,8 @@ const SECTIONS = [
     items: [
         { label: 'Diet' },
         { label: 'Allergies'},
-        { label: 'Avoidances' },
-        { label: 'Any other ingredients you avoid' },
+        { label: 'Custom Nutrients' },
+        { label: 'More' },
         { label: 'Search Ingredients and give the option' },
         { label: 'Accessibility mode'},
     ],
@@ -176,23 +176,11 @@ export default function Profile() {
                         navigation.navigate('allergy');
                         break;
                        
-                      case 'Avoidances':
-                        navigation.navigate('savedfood');
+                      case 'Custom Nutrients':
+                        navigation.navigate('customAllergy');
                         break;
-                      /*  
-                      case 'Any other ingredients you avoid':
-                        navigation.navigate('OtherAvoidancesScreen');
-                        break;
-                      case 'Search Ingredients and give the option':
-                        navigation.navigate('SearchIngredientsScreen');
-                        break;
-                      case 'Accessibility mode':
-                        navigation.navigate('AccessibilityScreen');
-                        break;
-                      default:
-                        // Default action if label doesn't match any of the above
-                        // For example, you can navigate to a generic screen
-                        navigation.navigate('GenericScreen'); */
+                        
+                      
                     }
                   }}>
                   <View style={styles.row}>

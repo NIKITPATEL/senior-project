@@ -48,13 +48,18 @@ export default function Scanner () {
     const [displayAllergy,setDisplayAllergy] = useState([]);
     const [displayDiet,setDisplayDiet] = useState([]);
     const [unmatchedDietary, setUnmatchedDietary] = useState([]); 
-    const [unmatchedAllergy, setUnmatchedAllergy] = useState(new Set());
+    const [unmatchedAllergy, setUnmatchedAllergy] = useState([]);
+    const [userNutrients, setUserNutrients] = useState([]);
+    const [caloriesOutOfRange, setCaloriesOutOfRange] = useState(false);
+    const [fatOutOfRange, setFatOutOfRange] = useState(false);
+    const [carbsOutOfRange, setCarbsOutOfRange] = useState(false);
+    const [proteinOutOfRange, setProteinOutOfRange] = useState(false);
+    const [sugarOutOfRange, setSugarOutOfRange] = useState(false);
+    const [fiberOutOfRange, setFiberOutOfRange] = useState(false);
 
 
 
-// Convert the set back to an array for rendering
-const unmatchedAllergyArray = Array.from(unmatchedAllergy);
-console.log('Unmatched Allergies:', unmatchedAllergyArray);
+
 
     const navigation = useNavigation();
     
@@ -138,6 +143,18 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
       fetchAllergies();
     },[userId]);
 
+    useEffect(() => {
+      if (modalVisible) {
+        fetchUserNutrients(userId)
+        .then(userNutrients => {
+          if (userNutrients) {
+            compareUserNutrientsWithValues(userNutrients);
+          }
+        });
+      }
+    }, [modalVisible]);
+
+
     
     // What happens when we scan the bar code
     const handleBarCodeScanned = async ({ type, data }) => {
@@ -178,12 +195,12 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
               const allergens = product.allergens_tags || [];
               const productImage = product.photo && product.photo.thumb;
       
-              setCalories(product.nf_calories || 'Calories Not Available');
-              setFat(product.nf_total_fat || 'Fat Not Available');
-              setCarbs(product.nf_total_carbohydrate || 'Carbs Not Available');
-              setProtein(product.nf_protein || 'Protein Not Available');
-              setSugar(product.nf_sugars || 'Sugar Not Available');
-              setFiber(product.nf_dietary_fiber || 'Fiber Not Available')
+              setCalories(product.nf_calories || 'N/A');
+              setFat(product.nf_total_fat || 'N/A');
+              setCarbs(product.nf_total_carbohydrate || 'N/A');
+              setProtein(product.nf_protein || 'N/A');
+              setSugar(product.nf_sugars || 'N/A');
+              setFiber(product.nf_dietary_fiber || 'N/A')
 
               console.log('Ingredients: ',ingredients)
               setBrandName(productName);
@@ -394,6 +411,7 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
                 }
               });
               setUnmatchedDietary(unmatched);
+              
 
               
               
@@ -409,32 +427,43 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
               // Loop through the ingredients and allergies to find matches
               ingredientsArray.forEach(ingredient => {
                 allergyPreferences.forEach(allergy => {
-                  // Normalize case for comparison
-                  const normalizedIngredient = ingredient.toLowerCase();
-                  const normalizedAllergy = allergy.toLowerCase();
-                  // Check if the ingredient contains the allergy (case insensitive)
-                  const containsAllergy = normalizedIngredient.includes(normalizedAllergy);
-                  console.log(`Checking ingredient "${normalizedIngredient}" for allergy "${normalizedAllergy}": ${containsAllergy}`);
-                  // If a matching allergy is found, add it to the set
-                  if (containsAllergy) {
-                    console.log('Found allergy:', allergy);
-                    // Add the found allergy to the set
-                    setUnmatchedAllergy(prevState => {
-                      // Create a new Set with the previous state
-                      const newState = new Set(prevState);
-                      // Add the new allergy to the set
-                      newState.add(allergy);
-                      return newState;
-                    });
+                    // Normalize case for comparison
+                    const normalizedIngredient = ingredient.toLowerCase();
+                    const normalizedAllergy = allergy.toLowerCase();
+                    // Check if the ingredient contains the allergy (case insensitive)
+                    const containsAllergy = normalizedIngredient.includes(normalizedAllergy);
+                    console.log(`Checking ingredient "${normalizedIngredient}" for allergy "${normalizedAllergy}": ${containsAllergy}`);
+                    // If a matching allergy is found and it's not already in the array, add it to the array
+                    if (containsAllergy) {
+                      console.log('Found allergy:', allergy);
+                      // Add the found allergy to the set if it doesn't already exist
+                      setUnmatchedAllergy(prevState => {
+                          // Create a new Set with the previous state
+                          const newState = new Set(prevState);
+                          // Add the new allergy to the set if it's not already present
+                          if (!newState.has(allergy)) {
+                              newState.add(allergy);
+                          }
+                          return newState;
+                      });
                   }
                 });
               });
-              console.log('Matched Allergy:', unmatchedAllergy);
+
+              
+                // Check if both unmatched dietary and unmatched allergy arrays are empty
+                if (unmatchedDietary.length > 0 && Array.from(unmatchedAllergy).length > 0) {
+                  setProductMatchesDiet(false);
+                } else {
+                  setProductMatchesDiet(true);
+                }
+
+                console.log('True or false:',productMatchesDiet);
               
 
               
+
               
-              //console.log('Allergn:',allergn);
               //etBrandName(productName)
             /*
          const appId = 'c958ac11'; // Replace with your Nutritionix Application ID
@@ -510,18 +539,18 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
                 } else {
                   console.error('No food items found in the response');
                 }
-                console.log(cartItems)
-          } else {
-              console.error('No data found for the scanned value.');
-          }
-      } catch (error) {
-          console.error('Error fetching data:', error.message);
-      }
-        
-        
-        setText(data)
-        console.log('Type: ' + type + '\nData: ' + data)
-    };
+                      console.log(cartItems)
+                } else {
+                    console.error('No data found for the scanned value.');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error.message);
+            }
+              
+              
+              setText(data)
+              console.log('Type: ' + type + '\nData: ' + data)
+          };
 
     const saveScannedProduct = async () => {
       const body = {
@@ -570,12 +599,95 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
         </View>)
     }
 
+    const fetchUserNutrients = async (userId) => {
+      try {
+        const response = await axios.get(path + `/user-nutrients/${userId}`);
+        const userNutrients = response.data.map(nutrient => ({
+          nutrientName: nutrient.nutrient_name,
+          min: nutrient.nutrient_min,
+          max: nutrient.nutrient_max
+        }));
+        console.log('user nutrients:' ,userNutrients);
+        return userNutrients; // Return the formatted user nutrients data
+        
+      } catch (error) {
+        console.error('Error fetching user nutrients:', error);
+        return null; // Return null in case of an error
+      }
+    };
+
+    console.log('checking :',carbsOutOfRange)
+
+    const compareUserNutrientsWithValues = (userNutrients) => {
+      userNutrients.forEach(nutrient => {
+        switch (nutrient.nutrientName) {
+          case 'protein':
+            if (protein !== 'N/A' && (protein < nutrient.min || protein > nutrient.max)) {
+              setProteinOutOfRange(true);
+            }
+            break;
+          case 'carbs':
+            if (carbs !== 'N/A' && (carbs < nutrient.min || carbs > nutrient.max)) {
+              setCarbsOutOfRange(true);
+            }
+            break;
+            break;
+          case 'calories':
+            if (calories !== 'N/A' && (calories < nutrient.min || calories > nutrient.max)) {
+              setCaloriesOutOfRange(true);
+            }
+            break;
+          case 'sugar':
+            if (sugar !== 'N/A' && (sugar < nutrient.min || sugar > nutrient.max)) {
+              setSugarOutOfRange(true);
+              
+            }
+            break;
+          case 'fiber':
+            if (carbs !== 'N/A' && (fiber < nutrient.min || fiber > nutrient.max)) {
+
+                setFiberOutOfRange(true);
+            }
+            break;
+
+          case 'fat':
+            if (carbs !== 'N/A' && (fat < nutrient.min || fat > nutrient.max)) {
+                  setFatOutOfRange(true);
+            }
+            break;
+
+          // Add cases for other nutrients as needed
+          default:
+            break;
+        }
+      });
+    };
+    
+    
+        
+    
+    
+    
+    
+
     const handle_closemodal = () => {
         setModalVisible(!modalVisible)
         setIngredient("");
         setBrandName("");
         setDietaryPreferences([]);
+        setUnmatchedAllergy([]);
+        setUnmatchedDietary([]);
+        setCaloriesOutOfRange(false);
+        setCarbsOutOfRange(false);
+        setProteinOutOfRange(false);
+        setSugarOutOfRange(false);
+        setFiberOutOfRange(false);
+        setFatOutOfRange(false);
     }
+
+    
+
+
     
 
 
@@ -583,12 +695,6 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
 
     return (
 
-      <LinearGradient
-      colors={['white', '#4c4c4c']}
-      style={styles.linearGradient}
-      start={{ x: 0, y: 1 }}
-      end={{ x: 0, y: 0 }}
-      >
         <SafeAreaView style={styles.safeAreaView} >
           <Appbar>
             <Appbar.BackAction onPress={() => navigation.goBack()} />
@@ -666,51 +772,65 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
                     <ScrollView horizontal>
                       <View style={styles.nutritionContainer}>
                         {/* Capsule for each nutrient */}
-                        <View style={styles.nutrientCapsule}>
+                        <View style={[styles.nutrientCapsule, caloriesOutOfRange && styles.outOfRange]}>
                           <Text style={styles.nutrientTitle}>Calories</Text>
                           <Text style={styles.nutrientValue}>{calories}g</Text>
                         </View>
-                        <View style={styles.nutrientCapsule}>
+                        <View style={[styles.nutrientCapsule, fatOutOfRange && styles.outOfRange]}>
                           <Text style={styles.nutrientTitle}>Fat</Text>
                           <Text style={styles.nutrientValue}>{fat}g</Text>
                         </View>
-                        <View style={styles.nutrientCapsule}>
-                          <Text style={styles.nutrientTitle}>Carbs</Text>
-                          <Text style={styles.nutrientValue}>{carbs}g</Text>
-                        </View>
-                        <View style={styles.nutrientCapsule}>
+                        <View style={[styles.nutrientCapsule, proteinOutOfRange && styles.outOfRange]}>
                           <Text style={styles.nutrientTitle}>Protein</Text>
                           <Text style={styles.nutrientValue}>{protein}g</Text>
                         </View>
-                        <View style={styles.nutrientCapsule}>
+                        <View style={[styles.nutrientCapsule, carbsOutOfRange && styles.outOfRange]}>
+                          <Text style={styles.nutrientTitle}>Carbs</Text>
+                          <Text style={styles.nutrientValue}>{carbs}g</Text>
+                        </View>
+                        <View style={[styles.nutrientCapsule, sugarOutOfRange && styles.outOfRange]}>
                           <Text style={styles.nutrientTitle}>Sugar</Text>
                           <Text style={styles.nutrientValue}>{sugar}g</Text>
                         </View>
-                        <View style={styles.nutrientCapsule}>
+                        <View style={[styles.nutrientCapsule, fiberOutOfRange && styles.outOfRange]}>
                           <Text style={styles.nutrientTitle}>Fiber</Text>
                           <Text style={styles.nutrientValue}>{fiber}g</Text>
                         </View>
                       </View>
                     </ScrollView>
-
-                    <View>
-                      <Text style={{color:'white'}}>Hwelo</Text>
+                    
+                    <View style={styles.matched}>
+                      {Array.from(unmatchedAllergy).length > 0 && (
+                        <View style={[styles.matchedContainer, styles.allergyContainer]}>
+                          <Text style={{color:'white'}}>
+                            Allergies: {Array.from(unmatchedAllergy).join(', ')}
+                          </Text>
+                        </View>
+                      )}
                       
-                        <Text style={{color:'white'}}>{unmatchedDietary.join(', ')}</Text>
-            
+                      {unmatchedDietary.length > 0 && (
+                        <View style={[styles.matchedContainer, styles.dietaryContainer]}>
+                          <Text style={{color:'white'}}>
+                            Dietary Preferences: {unmatchedDietary.join(', ')}
+                          </Text>
+                        </View>
+                      )}
                     </View>
 
-                    <View style={styles.dietMessageContainer}>
-                      {productMatchesDiet ? (
-                        <View style={[styles.dietMessage, styles.positiveDietMessage]}>
-                          <Text style={styles.dietMessageText}>This product fits your diet</Text>
-                          <IconButton icon="thumb-up" />
 
-                        </View>
-                      ) : (
+                    
+
+
+                    <View>
+                      {productMatchesDiet ? (
                         <View style={[styles.dietMessage, styles.negativeDietMessage]}>
                           <Text style={styles.dietMessageText}>This product doesn't match your diet</Text>
-                          <IconButton icon="thumb-down" color="red" />
+                          <IconButton icon="thumb-down" iconColor="red" />
+                        </View>
+                      ) : (
+                        <View style={[styles.dietMessage, styles.positiveDietMessage]}>
+                          <Text style={styles.dietMessageText}>This product fits your diet</Text>
+                          <IconButton icon="thumb-up" iconColor='green' />
                         </View>
                       )}
                     </View>
@@ -798,7 +918,8 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
                                 {/* Render your card here */}
                                 <View style={styles.card}>
                                     {/* Product image */}
-                                    <Image source={{ uri: item.photo }} style={styles.productImage} />
+                                    <Image source={item.photo ? { uri: item.photo } : require('../assets/food.png')} style={styles.productImage} />
+
 
                                     {/* Calories capsule */}
                                     <View style={styles.caloriesCapsule}>
@@ -835,18 +956,17 @@ console.log('Unmatched Allergies:', unmatchedAllergyArray);
             
         </SafeAreaView>
 
-      </LinearGradient>
+      
 
         
     );
 }
 
 const styles = StyleSheet.create({
-  linearGradient: {
-    flex: 1,
-  },
+  
   safeAreaView: {
     flex: 1,
+    
   },
   container: {
     flex:1,
@@ -990,6 +1110,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  outOfRange:{
+    backgroundColor:'pink',
+  },
   nutrientCapsule: {
     flex: 1,
     backgroundColor: '#fff',
@@ -1014,14 +1137,12 @@ const styles = StyleSheet.create({
   nutrientValue: {
     fontSize: 14 * SCALE, // Adjust the font size based on screen size
   },
-  dietMessageContainer: {
-    marginTop: 20,
-  },
+  
   dietMessage: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between', // Align items to the start and end of the container
-    paddingHorizontal: 20,
+    paddingHorizontal: 5,
     
     borderRadius: 30,
   },
@@ -1033,7 +1154,7 @@ const styles = StyleSheet.create({
   },
   dietMessageText: {
     marginLeft: 10,
-    color: 'green', // Green text color for positive message
+    
   },
   ingredientsContainer: {
     flexDirection: 'row',
@@ -1171,6 +1292,26 @@ const styles = StyleSheet.create({
   },
   errorMessageText: {
     color: 'red', // Text color of the error message
+  },
+  matched: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+  },
+  matchedContainer: {
+    borderRadius: 30,
+    padding: 10,
+    
+  },
+  allergyContainer: {
+    backgroundColor: 'red',
+    marginBottom:10,
+  },
+  dietaryContainer: {
+    backgroundColor: 'orange', // You can choose your desired color for dietary preferences
+  },
+  text: {
+    color: 'white',
   },
 
 });

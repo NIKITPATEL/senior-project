@@ -52,6 +52,7 @@ const Footer = () => {
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}
+        
         />
       
 

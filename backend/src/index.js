@@ -135,6 +135,23 @@ app.get('/total-nutrients/:userId', async (req, res) => {
   }
 });
 
+//a route handler for retrieving user nutrients
+app.get('/user-nutrients/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Retrieve user nutrients from the database for the specified userId
+    const { rows } = await pool.query('SELECT * FROM UserNutrients WHERE UserID = $1', [userId]);
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching user nutrients:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 
 
 
@@ -314,6 +331,48 @@ app.post('add-meal',async (req,res) => {
     res.status(500).json({message:'Internal server error'});
   }
 })
+
+// Add a route handler for adding user nutrients
+app.post('/user-nutrients', async (req, res) => {
+  try {
+    const { userId, nutrient_name, nutrient_min, nutrient_max } = req.body;
+
+    // Check if the nutrient already exists for the user
+    const existingNutrient = await pool.query('SELECT * FROM UserNutrients WHERE UserID = $1 AND nutrient_name = $2', [userId, nutrient_name]);
+
+    if (existingNutrient.rows.length > 0) {
+      // If the nutrient exists, update its min and max values
+      await pool.query('UPDATE UserNutrients SET nutrient_min = $1, nutrient_max = $2 WHERE UserID = $3 AND nutrient_name = $4', [nutrient_min, nutrient_max, userId, nutrient_name]);
+      res.status(200).json({ message: 'User nutrient updated successfully' });
+    } else {
+      // If the nutrient does not exist, insert a new entry
+      await pool.query('INSERT INTO UserNutrients (UserID, nutrient_name, nutrient_min, nutrient_max) VALUES ($1, $2, $3, $4)', [userId, nutrient_name, nutrient_min, nutrient_max]);
+      res.status(201).json({ message: 'User nutrient added successfully' });
+    }
+  } catch (error) {
+    console.error('Error adding/updating user nutrient:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/add-meal', async (req, res) => {
+  const { userId, calories, protein, carbs, fats, sugar } = req.body;
+
+  try {
+    // Execute the INSERT query to add the meal
+    const queryText = 'INSERT INTO nutrients (UserID, calories, protein, carbs, fats, sugar) VALUES ($1, $2, $3, $4, $5, $6)';
+    const values = [userId, calories, protein, carbs, fats, sugar];
+    await pool.query(queryText, values);
+
+    // Send response indicating success
+    res.status(200).send('Meal added successfully');
+  } catch (error) {
+    // If an error occurs, send an error response
+    console.error('Error adding meal:', error);
+    res.status(500).send('Error adding meal');
+  }
+});
+
 
 
 

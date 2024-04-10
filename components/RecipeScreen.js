@@ -1,12 +1,15 @@
-import React, { useState,useEffect } from 'react';
-import { View, TextInput, Button, ScrollView, StyleSheet, Image, Text,SafeAreaView,Animated,TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, ScrollView, StyleSheet, Image, Text, SafeAreaView, Animated, TouchableOpacity, Modal,Linking } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import { Appbar } from 'react-native-paper';
+import { Appbar, IconButton } from 'react-native-paper';
 
 const RecipeScreen = () => {
   const [ingredients, setIngredients] = useState('');
   const [recipes, setRecipes] = useState([]);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [recipeDetails, setRecipeDetails] = useState(null);
   const navigation = useNavigation();
 
   const searchRecipes = async () => {
@@ -27,69 +30,141 @@ const RecipeScreen = () => {
     }
   };
 
-  // Define fade-in and fade-out animations
-    const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const handleRecipeClick = async (recipe) => {
+    setSelectedRecipe(recipe);
+    setModalVisible(true);
 
-    useEffect(() => {
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000, // Adjust the duration as needed
-        useNativeDriver: true,
-      }).start();
-    }, [fadeAnim]);
+    try {
+      // Make an HTTP request to fetch recipe details
+      const response = await axios.get('https://api.edamam.com/search', {
+        params: {
+          r: recipe.recipe.uri, // Pass the URI of the selected recipe
+          app_id: 'acb5ea92',
+          app_key: '626cb51e6848cfb350700d5275ac7b73',
+        },
+      });
+
+      // Extract recipe details from the response and set it in state
+      setRecipeDetails(response.data[0]);
+      console.log(recipeDetails);
+    } catch (error) {
+      console.error('Error fetching recipe details:', error);
+    }
+  }
+
+  // Define fade-in and fade-out animations
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000, // Adjust the duration as needed
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Appbar >
-          <Appbar.BackAction onPress={() =>{navigation.goBack();}} />
-          <Appbar.Content title='Search Recipes'/>
-        </Appbar>
-      </View>
-      
-      <View style={styles.content}>
-        {/* User input section */}
-        <Animated.View
-          style={[
-            styles.animeContainer,
-            {
-              opacity: fadeAnim, // Apply fade-in and fade-out effect
-              shadowColor: '#000', // Shadow color
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25, // Shadow opacity
-              shadowRadius: 3.84, // Shadow radius
-              elevation: 5, // Android elevation
-            },
-          ]}
-        >
-          <Text style={styles.text}>
-            We will suggest you meals based on what ingredients you have in your fridge
-          </Text>
-        </Animated.View>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter ingredients..."
-          value={ingredients}
-          onChangeText={setIngredients}
-        />
-        <TouchableOpacity onPress={searchRecipes}>
-            <Image source={require('../assets/magic-wand.png')} style={{width:30,height:30,marginTop:10,alignSelf:'center'}}/>
-        </TouchableOpacity>
+    <SafeAreaView>
+        <View style={styles.header}>
+          <Appbar>
+            <Appbar.BackAction onPress={() => { navigation.goBack(); }} />
+            <Appbar.Content title='Search Recipes' />
+          </Appbar>
+        </View>
 
-        {/* Recipe cards */}
-        <ScrollView style={styles.recipeContainer}>
-          {recipes.map((recipe, index) => (
-            <View key={index} style={styles.recipeCard}>
-              <Image source={{ uri: recipe.recipe.image }} style={styles.recipeImage} />
-              <Text style={styles.recipeName}>{recipe.recipe.label}</Text>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+        
+          {/* User input section */}
+          <Animated.View
+            style={[
+              styles.animeContainer,
+              {
+                opacity: fadeAnim, // Apply fade-in and fade-out effect
+                shadowColor: '#000', // Shadow color
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25, // Shadow opacity
+                shadowRadius: 3.84, // Shadow radius
+                elevation: 5, // Android elevation
+              },
+            ]}
+          >
+            <Text style={styles.text}>
+              We will suggest you meals based on what ingredients you have in your fridge
+            </Text>
+          </Animated.View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter ingredients..."
+            value={ingredients}
+            onChangeText={setIngredients}
+          />
+          <TouchableOpacity onPress={searchRecipes}>
+            <Image source={require('../assets/magic-wand.png')} style={{ width: 30, height: 30, marginTop: 10, alignSelf: 'center' }} />
+          </TouchableOpacity>
+
+          {/* Recipe cards */}
+          <ScrollView style={styles.recipeContainer}>
+            {recipes.map((recipe, index) => (
+              <TouchableOpacity key={index} style={styles.recipeCard} onPress={() => handleRecipeClick(recipe)}>
+                <Image source={{ uri: recipe.recipe.image }} style={styles.recipeImage} />
+                <Text style={styles.recipeName}>{recipe.recipe.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            {recipeDetails && (
+              <View style={styles.modalContainer}>
+                {/* Close button */}
+                <IconButton
+                  icon="close"
+                  size={30}
+                  onPress={() => setModalVisible(false)}
+                  style={styles.closeButton}
+                />
+                {/* Dish name and meal image */}
+                <View style={styles.mealImageContainer}>
+                  <Text style={styles.modalTitle}>{recipeDetails?.label}</Text>
+                  <Image source={{ uri: recipeDetails?.image }} style={styles.mealImage} />
+                </View>
+                {/* Ingredients */}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text>Calories: {recipeDetails.calories.toFixed(2)}</Text>
+                  <Text>Total Servings: 2</Text>
+                </View>
+                <View style={{flexDirection: 'row',alignItems: 'center', justifyContent:'space-between',marginTop:10, }}>
+                  
+                  <Image source={require('../assets/cooking.png')} style={styles.cook} />
+                  <Image source={require('../assets/seasoning.png')} style={styles.cook}/>
+                  <Image source={require('../assets/sauce.png')} style={styles.cook}/>
+                  <Image source={require('../assets/hot-pot.png')} style={styles.cook}/>
+                </View>
+
+                <Text style={styles.modalSubtitle}>Ingredients:</Text>
+                <ScrollView style={styles.ingredientsContainer}>
+                  {recipeDetails?.ingredientLines.map((ingredient, index) => (
+                    <Text key={index} style={styles.ingredient}>{ingredient}</Text>
+                  ))}
+                </ScrollView>
+
+                <TouchableOpacity onPress={() => Linking.openURL(recipeDetails.url)}>
+                  <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>
+                    Click here for instructions
+                  </Text>
+                </TouchableOpacity>
+
+              </View>
+            )}
+          </Modal>
+        
+      </SafeAreaView>
+
   );
 };
 
@@ -103,7 +178,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 10,
+    
   },
   animeContainer: {
     backgroundColor: '#c1e3b6', // Background color
@@ -117,7 +192,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    
+
     height: 40,
     paddingHorizontal: 10,
     marginBottom: 10,
@@ -163,6 +238,58 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingVertical: 10,
     paddingHorizontal: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  mealImageContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  mealImage: {
+    width: "90%",
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    
+  },
+  ingredientsContainer: {
+    maxHeight: 200,
+  },
+  ingredient: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  stepsContainer: {
+    maxHeight: 300,
+  },
+  cook:{
+    width: 50,
+    height: 50,
+    resizeMode: 'cover',
+    borderRadius: 10,
   },
 });
 

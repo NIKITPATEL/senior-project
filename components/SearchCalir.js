@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity,Image } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity,Image, Alert } from 'react-native';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Appbar,IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from './UserContext';
+import { path } from './path';
 
 
 
@@ -14,26 +16,18 @@ const SearchCali = () => {
   const [searchResults2, setSearchResults2] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const navigation = useNavigation();
+  const {userId} = useUser();
 
   const handleSearch = async () => {
     try {
-      const response = await axios.post('https://trackapi.nutritionix.com/v2/search/instant', 
-        {
-          query: query
-        },{
-        headers: {
-          'Content-Type': 'application/json',
-          'x-app-id': 'c958ac11',
-          'x-app-key': '7d5e826cc223699c79497f63d820cf0a',
-        },
-      });
-      
-      setSearchResults(response.data.branded || response.data.common || []);
-      console.log(searchResults);
+      const response = await axios.get(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${query}&json=1`);
+      console.log('Search Results:', response.data.products);
+      setSearchResults(response.data.products);
     } catch (error) {
       console.error('Error searching:', error);
     }
   };
+  
   const handleSearch_2 = async () => {
     try {
       const response = await axios.post('https://trackapi.nutritionix.com/v2/natural/nutrients', 
@@ -49,14 +43,54 @@ const SearchCali = () => {
       console.log('Nutrients: ',response.data.foods)
       setSearchResults2(response.data.foods);
     } catch (error) {
-      console.error('Error searching:', error);
     }
   };
 
-  const handleAddMeal = (item) => {
-    // Perform action to add meal using item's nutritional information
-    console.log('Meal added:', item);
+  const handleAddMeal = async (item) => {
+    try {
+      // Prepare the meal data
+      const mealData = {
+        userId: userId, // Assuming you have the user ID available
+        calories: item.nf_calories || item.nf_calories_estimated || 0,
+        protein: item.nf_protein || item.nf_protein_estimated || 0,
+        carbs: item.nf_total_carbohydrate || item.nf_total_carbohydrate_estimated || 0,
+        fats: item.nf_total_fat || item.nf_total_fat_estimated || 0,
+        sugar: item.nf_sugars || item.nf_sugars_estimated || 0, // Add sugar value if available
+      };
+  
+      // Send a POST request to add the meal to the database
+      const response = await axios.post(path + '/add-meal', mealData);
+  
+      // Handle the response if needed
+      console.log('Meal added:', response.data);
+      Alert.alert('Meal added');
+    } catch (error) {
+      console.error('Error adding meal:', error);
+    }
   };
+  const handleAddMeal2 = async (item) => {
+    try {
+      // Prepare the meal data
+      const mealData = {
+        userId: userId, // Assuming you have the user ID available
+        calories: item.nutriments?.energy_value || 0,
+        protein: item.nutriments?.proteins || 0,
+        carbs: item.nutriments?.carbohydrates || 0,
+        fats: item.nutriments?.fat || 0,
+        sugar: item.nutriments?.sugars || 0, // Add sugar value if available
+      };
+  
+      // Send a POST request to add the meal to the database
+      const response = await axios.post(path + '/add-meal', mealData);
+  
+      // Handle the response if needed
+      console.log('Meal added:', response.data);
+      Alert.alert('Meal added');
+    } catch (error) {
+      console.error('Error adding meal:', error);
+    }
+  };
+  
   // Function to handle clear button press
   const handleClear = () => {
     setSearchResults([]);
@@ -114,10 +148,11 @@ const SearchCali = () => {
             <View style={styles.cardContainer}>
               <View style={styles.leftContent}>
                 <Text style={styles.foodName}>{item.food_name}</Text>
-                <Text>Calories: {item.nf_calories}</Text>
-                <Text>Protein: {item.nf_protein}</Text>
-                <Text>Carbs: {item.nf_total_carbohydrate}</Text>
-                <Text>Fat: {item.nf_total_fat}</Text>
+                <Text>Calories: {item.nf_calories||0}g</Text>
+                <Text>Protein: {item.nf_protein || 0}g</Text>
+                <Text>Carbs: {item.nf_total_carbohydrate || 0}g</Text>
+                <Text>Fat: {item.nf_total_fat || 0}g</Text>
+                <Text>Sugar: {item.nf_sugar || 0} g</Text>
               </View>
               <View style={styles.rightContent}>
                 <Image
@@ -137,25 +172,25 @@ const SearchCali = () => {
           renderItem={({ item }) => (
             <View style={styles.item}>
               <View style={styles.leftContent}>
-                <Text style={styles.foodName}>{item.food_name || item.brand_name_item_name}</Text>
-                <Text>Calories: {item.nf_calories || item.nf_calories_estimated} kcal</Text>
-                <Text>Fat: {item.nf_total_fat || item.nf_total_fat_estimated} g</Text>
-                <Text>Protein: {item.nf_protein || item.nf_protein_estimated} g</Text>
-                <Text>Carbohydrates: {item.nf_total_carbohydrate || item.nf_total_carbohydrate_estimated} g</Text>
-              
+                <Text style={styles.foodName}>{item.product_name}</Text>
+                <Text>Calories: {item.nutriments?.energy_value || 'N/A'} kcal</Text>
+                <Text>Fat: {item.nutriments?.fat || 'N/A'} g</Text>
+                <Text>Protein: {item.nutriments?.proteins || 'N/A'} g</Text>
+                <Text>Carbs: {item.nutriments?.carbohydrates || 'N/A'} g</Text>
+                <Text>Sugar: {item.nutriments?.sugars || 'N/A'} g</Text>
               </View>
               <View style={styles.rightContent}>
                 <Image
-                  source={{ uri: item.photo.thumb }}
+                  source={{ uri: item.image_url }}
                   style={styles.image}
                 />
-                
-                <Button mode='contained' title='Add Meal' style={{ backgroundColor: 'green' }} onPress={() => handleAddMeal(item)} />
+                <Button mode='contained' title='Add Meal' style={{ backgroundColor: 'green' }} onPress={() => handleAddMeal2(item)} />
               </View>
             </View>
           )}
-          keyExtractor={(item) => item.food_name}
+          keyExtractor={(item) => item.code}
         />
+
       )}
 
         
@@ -236,7 +271,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    
   },
   leftContent: {
     flex: 1,
@@ -302,134 +337,3 @@ const styles = StyleSheet.create({
 });
 
 export default SearchCali; 
-/*
-
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import axios from 'axios';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Appbar } from 'react-native-paper';
-import { path } from './path';
-import { useUser } from './UserContext';
-
-
-const API_URL = 'https://world.openfoodfacts.net/api/v2/search';
-
-const SearchCali = () => {
-  const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const {userId} = useUser();
-
-  const handleSearch = async () => {
-    try {
-      const response = await axios.get(API_URL, {
-        params: {
-          categories_tags_en: query,
-          fields: 'product_name,nutriments,categories_tags_en',
-        },
-      });
-      setSearchResults(response.data.products);
-    } catch (error) {
-      console.error('Error searching:', error);
-    }
-  };
-
-  const handleAddMeal = async (item) => {
-    try {
-        const mealData = {
-            userId: userId,
-            calories: item.nutriments?.energy_value || 0,
-            protein: item.nutriments?.proteins || 0,
-            carbs: item.nutriments?.carbohydrates || 0,
-            fats: item.nutriments?.fat || 0,
-        };
-
-        const reponse = await axios.post(path+'/add-meal',mealData);
-    }catch(error){
-        console.log('Erro hadling meal:', error)
-    }
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title='Search Calories'/>
-      </Appbar.Header>
-      <View style={styles.innerContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Search for products..."
-          value={query}
-          onChangeText={setQuery}
-        />
-        <Button title='Search' onPress={handleSearch} />
-        <Text style={styles.heading}>Search Results:</Text>
-        <FlatList
-            data={searchResults}
-            renderItem={({ item }) => (
-                <View style={styles.item} key={item.code}>
-                    <Text>Name: {item.product_name}</Text>
-                    <Text>Calories: {item.nutriments?.energy_value || 'N/A'} kcal</Text>
-                    <Text>Fat: {item.nutriments?.fat || 'N/A'} g</Text>
-                    <Text>Protein: {item.nutriments?.proteins || 'N/A'} g</Text>
-                    <Text>Carbohydrates: {item.nutriments?.carbohydrates || 'N/A'} g</Text>
-                    <Button title='Add meal'onPress={() => handleAddMeal(item)} />
-                        
-                    
-                </View>
-            )}
-            keyExtractor={(item) => (item.code ? item.code.toString() : item.product_name)}
-
-        />
-
-      </View>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  innerContainer: {
-    flex: 1,
-    padding: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  item: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    position: 'relative', // Ensure addButton's absolute position is relative to this container
-  },
-  heading: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 5,
-  },
-  addButton: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-  },
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-});
-
-export default SearchCali;
-*/
