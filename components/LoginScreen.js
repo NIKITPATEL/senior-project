@@ -46,6 +46,7 @@ const LoginScreen = () => {
         onChangeText={setPassword}
       />
       <Button title="Login" onPress={handleLogin} />
+      <Button title ='Create Account' onPress={()=> navigation.navigate('register')} />
 
     </SafeAreaProvider>
   );

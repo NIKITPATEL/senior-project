@@ -53,26 +53,26 @@ const CartItem = ({ image, productName,onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '30%', // Adjust the width to fit three items in a row
+    width: '30%', 
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: '#ddd', // Border color
-    borderRadius: 10, // Border radius
-    backgroundColor: '#fff', // Background color
-    shadowColor: '#000', // Shadow color
-    shadowOpacity: 0.2, // Shadow opacity
-    shadowRadius: 5, // Shadow radius
+    borderColor: '#ddd', 
+    borderRadius: 10, 
+    backgroundColor: '#fff', 
+    shadowColor: '#000', 
+    shadowOpacity: 0.2, 
+    shadowRadius: 5, 
     shadowOffset: { width: 0, height: 2 }, // Shadow offset
-    elevation: 3, // Elevation for Android
+    elevation: 3, 
   },
   imageContainer: {
-    aspectRatio: 1, // Maintain aspect ratio for square image container
-    overflow: 'hidden', // Ensure image doesn't overflow the container
-    borderRadius: 10, // Apply border radius to image container
+    aspectRatio: 1, 
+    overflow: 'hidden', 
+    borderRadius: 10, 
   },
   image: {
     width: '100%',
-    height: '100%', // Make image fill the square container
+    height: '100%', 
     resizeMode: 'cover',
   },
   productName: {
@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center', // Center the text
+    textAlign: 'center', 
+    fontFamily:'Avenir'
     
   },
   actionButtons: {

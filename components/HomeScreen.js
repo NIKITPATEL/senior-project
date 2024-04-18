@@ -9,7 +9,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Navigate } from 'react-router-native';
 import { AntDesign } from '@expo/vector-icons';
 
-
 const HomeScreen = (props) => {
 
     const[searchQuery,setSearchQuery] = React.useState('');
@@ -58,27 +57,27 @@ const HomeScreen = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Welcome Message Card */}
+      
       <View style={styles.welcomeCard}>
-        {/* Add welcome message components here */}
+        {/* Profile icon and text on the left */}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image
+            source={require('../assets/profile.png')} // Replace with the path to your image
+            style={{ width: 40, height: 40 ,marginHorizontal:20,marginBottom:20,marginTop:15}} // Adjust width and height as needed
+          />
+          <Text style={{ fontSize: 20, fontWeight: '800',fontFamily:'Avenir-Black' }}>Welcome, {username}</Text>
+        </View>
+        {/* Notification icon on the right corner */}
         <IconButton
-                icon="account"
-                size={40}
-                onPress={() => {
-                // Handle user icon press
-                }}
-                style={{marginRight:-10}}
-        />
-        <Text style={{paddingTop:25,marginLeft:-100,}}> Welcome , {username}</Text>
-        <IconButton
-                icon="bell"
-                size={30}
-                onPress={() => {
-                // Handle user icon press
-                }}
-                style={{marginRight:-10}}
+          icon="bell"
+          size={30}
+          onPress={() => {
+            // Handle notification icon press
+          }}
+          style={{ position: 'absolute', top: 10, right: 10 }}
         />
       </View>
+
 
       {/* Nutrition Summary Card */}
         <View style={styles.nutritionCard}>
@@ -97,12 +96,12 @@ const HomeScreen = (props) => {
           </Animated.View>
 
           <View style={styles.nutrientLabels}>
-            <Text style={styles.labelsTitle}>Your Nutrition Intake today</Text>
-            <Text style={styles.label}>Total Calories: {totalNutrients.totalcalories} kcal</Text>
-            <Text style={styles.label}>Total Protein: {totalNutrients.totalprotein} g</Text>
-            <Text style={styles.label}>Total Carbs: {totalNutrients.totalcarbs} g</Text>
-            <Text style={styles.label}>Total Fats: {totalNutrients.totalfats} g</Text>
-            <Text style={styles.label}>Total Sugar: {totalNutrients.totalfats} g</Text>
+            <Text style={styles.labelsTitle}>Nutrition Intake today</Text>
+            <Text style={{fontWeight:'900',marginBottom:5,textAlign:'center',fontFamily:'Avenir-Black'}}>Calories: {totalNutrients.totalcalories} kcal</Text>
+            <Text style={styles.label}>Protein: {totalNutrients.totalprotein} g</Text>
+            <Text style={styles.label}>Carbs: {totalNutrients.totalcarbs} g</Text>
+            <Text style={styles.label}>Fats: {totalNutrients.totalfats} g</Text>
+            <Text style={styles.label}>Sugar: {totalNutrients.totalfats} g</Text>
           </View>
         </View>
       </View>
@@ -118,48 +117,21 @@ const HomeScreen = (props) => {
             
         
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-              
-            <View style={styles.card}>
-              <Image source={require('../assets/random_1.png')} style={{width: '100%',height: '100%',resizeMode: 'cover',borderRadius:24}}/>
-            </View>
+          <View style={{width: '45%', aspectRatio: 1, marginHorizontal: 10 }}>
+            <Image source={require('../assets/diet.png')} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 24 }} />
+          </View>
 
-            
-                
-            <View style={{width: '45%', aspectRatio: 1,marginHorizontal: 10,borderRadius: 24,}}>
-              <View style={{alignItems:'center'}}>
-                <Text style={{fontSize: 16,fontWeight: 'bold',textAlign: 'center',marginTop:20}}>Count{'\n'}Calories</Text>
-                
-                  <IconButton icon="fire" style={styles.iconWrapper} size={75} onPress={() => navigation.navigate('searchcali')} />
-                
- 
-              </View>
+          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Button onPress={() => navigation.navigate('searchcali')} style={{ backgroundColor: '#c1e3b6', marginTop: 10 }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', textAlign: 'center', color: 'black',fontFamily:'Avenir-Black' }}>Count Nutrients</Text>
+          </Button>
 
+            <View style={{ width: '45%', aspectRatio: 1, alignSelf: 'center',marginBottom:20 }}>
+              <Image source={require('../assets/fire.png')} style={{ width: '100%', height: '100%', resizeMode: 'cover'}} />
             </View>
-                
-            
-            
-            
-            <View style={styles.card}>
-                <View style={styles.cardContainer}>
-                    <IconButton icon="circle"  size={40} style={styles.Cardicon} />  
-                </View>
-                <Text style={styles.cardText}>Text Line 1</Text>
-                <Text style={styles.cardText2}>Text Line 2</Text>
-                {/* Progress bar */}
-                <View style={styles.progressBarContainer}>
-                    <ProgressBar
-                        progress={0.6}
-                        color="green"
-                        style={{width:100}}
-                    />
-                    <View style={styles.progressTextContainer}>
-                        <Text style={styles.progressText}>3/5</Text>
-                    </View>
-                </View>
-            
-            </View>
+          </View>
+        </View>
 
-        </View>    
         
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
           
@@ -174,12 +146,12 @@ const HomeScreen = (props) => {
                 {/* Progress bar */}
                 <View style={styles.progressBarContainer}>
                     <ProgressBar
-                        progress={0.6}
+                        progress={0.3}
                         color="green"
                         style={{width:100}}
                     />
                     <View style={styles.progressTextContainer}>
-                        <Text style={styles.progressText}>3/5</Text>
+                        <Text style={styles.progressText}>2/5</Text>
                     </View>
                 </View>
                 </TouchableOpacity>
@@ -199,7 +171,7 @@ const HomeScreen = (props) => {
                 {/* Progress bar */}
                 <View style={styles.progressBarContainer}>
                   <ProgressBar
-                    progress={0.6}
+                    progress={0.8}
                     color="green"
                     style={{width:100}}
                   />
@@ -210,26 +182,6 @@ const HomeScreen = (props) => {
                 </TouchableOpacity>
               </View>
             
-            
-            <View style={styles.card}>
-                <View style={styles.cardContainer}>
-                    <IconButton icon="circle"  size={40} style={styles.Cardicon} />  
-                </View>
-                <Text style={styles.cardText}>Text Line 1</Text>
-                <Text style={styles.cardText2}>Text Line 2</Text>
-                {/* Progress bar */}
-                <View style={styles.progressBarContainer}>
-                    <ProgressBar
-                        progress={0.6}
-                        color="green"
-                        style={{width:100}}
-                    />
-                    <View style={styles.progressTextContainer}>
-                        <Text style={styles.progressText}>3/5</Text>
-                    </View>
-                </View>
-            
-            </View>
         </View>
   {/* Add more pairs of cards as needed */}
 
@@ -250,7 +202,7 @@ const styles = StyleSheet.create({
   },
   welcomeCard: {
     marginBottom: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#c1e3b6',
     padding: 5,
     borderBottomLeftRadius:20,
     borderBottomRightRadius:20,
@@ -259,7 +211,7 @@ const styles = StyleSheet.create({
   },
   nutritionCard: {
     marginBottom: 20,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'skyblue',
     padding: 20,
     borderRadius: 20,
   },
@@ -288,7 +240,9 @@ const styles = StyleSheet.create({
   },
   labelsTitle: {
     marginBottom: 10, // Add spacing
-    fontWeight: 'bold',
+    fontWeight: '900',
+    fontSize:18,
+    fontFamily:'Avenir-Black'
   },
   
   container_2: {
@@ -323,62 +277,66 @@ const styles = StyleSheet.create({
   label: {
     textAlign: 'center',
     marginBottom:5,
+    fontWeight:'600',
+    fontFamily:'Avenir-Black',
   },
   card: {
-    width: '45%', // Adjust as needed to fit two cards in a row
-    aspectRatio: 1, // Maintain aspect ratio for square cards
-    marginHorizontal: 10, // Adjust spacing between cards
-    backgroundColor: 'lightgreen',
+    width: '45%', 
+    aspectRatio: 1, 
+    marginHorizontal: 10, 
+    backgroundColor: '#c1e3b6',
     borderRadius: 24,
   },
   Cardicon: {
     position: 'absolute',
     top: 0,
-    left: 10,
-    backgroundColor: 'transparent', // Set background color to transparent
+    backgroundColor: 'transparent', 
     color: 'blue',
     
   },
   cardContainer: {
-    flexDirection: 'row', // Align items horizontally
-    alignItems: 'center', // Align items vertically
+    flexDirection: 'row', 
+    alignItems: 'center', 
   },
   cardText: {
     top: 60,
-    left: 10,
+    left: 15,
     marginLeft: 5, // Adjust spacing between icon and text
     color: '#030303',
     fontSize: 12,
+    fontFamily:'Avenir-Black',
     
   },
   cardText2: {
     top: 70,
-    left: 10,
+    left: 15,
     marginLeft: 5, // Adjust spacing between icon and text
     color: '#030303',
     fontSize: 16,
-    
+    fontFamily:'Avenir-Black',
     fontWeight: '600',
   },
   progressBarContainer: {
     top: 80,
-    left: 10,
+    left: 15,
     flexDirection: 'row',
     padding:5,
     alignItems: 'center',
   },
   progressBar: {
     flex: 1,
-    marginRight: 10, // Adjust spacing between progress bar and text
+    marginRight: 10, 
     padding:20,
   },
   progressTextContainer: {
-    backgroundColor: '#f0f0f0', // Example background color for the capsule
-    paddingHorizontal: 5, // Adjust padding as needed   
-    borderRadius: 10, // Adjust border radius as needed
+    backgroundColor: '#f0f0f0', 
+    paddingHorizontal: 5, 
+    borderRadius: 10, 
+    
   },
   progressText: {
-    color: 'black', // Example text color
+    color: 'black', 
+    fontFamily:'Avenir',
   },
   iconWrapper: {
     borderWidth: 2,

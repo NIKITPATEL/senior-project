@@ -14,6 +14,7 @@ import SearchCali from './components/SearchCalir';
 import RecipeScreen from './components/RecipeScreen';
 import Scanner from './components/Scanner';
 import CustomAllergy from './components/CustomAllergy';
+import NutrientCalculator from './components/NutrientCalculator';
 
 
 import Footer from './components/Footer';
@@ -47,6 +48,7 @@ const App = () => {
               <Stack.Screen name='recipesearch' component={RecipeScreen} />
               <Stack.Screen name='scanner' component={Scanner} />
               <Stack.Screen name='customAllergy' component={CustomAllergy} />
+              <Stack.Screen name='nutrientcalcul' component={NutrientCalculator} />
           
         
         

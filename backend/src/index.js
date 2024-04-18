@@ -52,8 +52,9 @@ app.get('/user', authenticateToken, async (req, res) => {
 
     // Extract the username from the user record
     const username = userInfo.rows[0].username;
+    const userEmail =  userInfo.rows[0].email;
     
-    res.json({ userId:userId,username: username });
+    res.json({ userId:userId,username: username,userEmail:userEmail });
   } catch (error) {
     console.error('Error fetching user information:', error);
     res.sendStatus(500); // Internal server error
@@ -62,22 +63,30 @@ app.get('/user', authenticateToken, async (req, res) => {
 
 app.get('/savefood/:userId', async (req, res) => {
   const { userId } = req.params;
-  console.log({userId})
 
   try {
-      // Query the database to fetch barcode IDs for the provided user ID
-      const result = await pool.query('SELECT barcodeid FROM SCANNEDFOODS WHERE userid = $1', [userId]);
+    console.log('Fetching scanned foods for user ID:', userId);
 
-      // Extract barcode IDs from the query result
-      const barcodeIds = result.rows.map(row => row.barcodeid);
+    // Query the database to fetch barcode IDs, product names, and photo IDs for the provided user ID
+    const result = await pool.query(`
+    SELECT barcodeid, productname, photoid
+    FROM ScannedFoods
+    WHERE userid = $1;
+    
+    `, [userId]);
 
-      // Send the barcode IDs as a JSON response
-      res.json({ barcodeIds });
+    console.log('Scanned foods retrieved successfully:', result.rows);
+
+    // Send the data as a JSON response
+    res.json({ scannedFoods: result.rows });
   } catch (error) {
-      console.error('Error retrieving barcode IDs:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    console.error('Error retrieving scanned foods:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+
 
 // Get user preferences
 app.get('/userpreferences/:userId', async (req, res) => {
@@ -230,58 +239,65 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/save_scanned', async (req, res) => {
-  let { userId, productId, barcodeId } = req.body;
+  let { userId, productId, barcodeId, productName, photoId } = req.body;
   // Convert productId and barcodeId to integers
   productId = parseInt(productId);
   barcodeId = parseInt(barcodeId);
 
   try {
-    // First check if the Poduct or the barcode scanned already exists
+    // First check if the Product or the barcode scanned already exists
     const existingProduct = await pool.query(
       'SELECT * FROM SCANNEDFOODS WHERE BarcodeId = $1',[barcodeId]
     );
 
     if(existingProduct.rows.length > 0){
       console.log('error sent')
-      return res.status(400).json({success:false,message:'Product already saved'});
+      return res.status(400).json({ success: false, message: 'Product already saved' });
     }
 
-      //if product doesn't exists
-      // Here, you'll need to execute an INSERT query to insert the scanned data into your table.
-      const result = await pool.query(
-          'INSERT INTO SCANNEDFOODS (UserID, ProductID, ScanTime, BarcodeID) VALUES ($1, $2, CURRENT_TIMESTAMP, $3) RETURNING *',
-          [userId, productId, barcodeId]
-      );
+    // Here, you'll need to execute an INSERT query to insert the scanned data into your table.
+    const result = await pool.query(
+      'INSERT INTO SCANNEDFOODS (UserID, ProductID, ScanTime, BarcodeID, ProductName, PhotoID) VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4, $5) RETURNING *',
+      [userId, productId, barcodeId, productName, photoId]
+    );
 
-      console.log('Data inserted successfully:', result.rows[0]);
+    console.log('Data inserted successfully:', result.rows[0]);
 
-      // Send a JSON response indicating success
-      res.status(201).json({ success: true, data: result.rows[0] });
+    // Send a JSON response indicating success
+    res.status(201).json({ success: true, data: result.rows[0] });
   } catch (error) {
-      console.error('Error inserting data:', error);
-      // Send an error response
-      res.status(500).json({ success: false, error: 'Internal server error' });
+    console.error('Error saving scanned food:', error);
+    res.status(500).json({ success: false, message: 'Error saving scanned food' });
   }
 });
 
 
+
 app.post('/user/preferences', async (req, res) => {
   try {
-    const { userId, preferences } = req.body;
+    const { userId, selected, deselected } = req.body;
+    console.log('Received deselected preferences:', deselected);
     
-    for (const preferenceName of preferences) {
-      
-      // Lookup the PreferenceID for the given preferenceName
-      const { rows:dietaryRows } = await pool.query('SELECT PreferenceID FROM DietaryPreferences WHERE PreferenceName = $1', [preferenceName]);
+    // Insert selected preferences
+    for (const preferenceName of selected) {
+      const { rows: dietaryRows } = await pool.query('SELECT PreferenceID FROM DietaryPreferences WHERE PreferenceName = $1', [preferenceName]);
       
       if (dietaryRows.length > 0) {
-        console.log(dietaryRows)
         const preferenceId = dietaryRows[0].preferenceid;
-        console.log(preferenceId)
-        // Insert the UserDietaryPreferences
         await pool.query('INSERT INTO UserDietaryPreferences (UserID, PreferenceID) VALUES ($1, $2)', [userId, preferenceId]);
       }
     }
+
+    // Delete deselected preferences
+    for (const preferenceName of deselected) {
+      const { rows: dietaryRows } = await pool.query('SELECT PreferenceID FROM DietaryPreferences WHERE PreferenceName = $1', [preferenceName]);
+      
+      if (dietaryRows.length > 0) {
+        const preferenceId = dietaryRows[0].preferenceid;
+        await pool.query('DELETE FROM UserDietaryPreferences WHERE UserID = $1 AND PreferenceID = $2', [userId, preferenceId]);
+      }
+    }
+
     res.status(200).json({ message: 'Preferences saved successfully.' });
   } catch (error) {
     console.error('Error saving preferences:', error);
@@ -289,34 +305,48 @@ app.post('/user/preferences', async (req, res) => {
   }
 });
 
-app.post('/user/allergies',async(req,res)=> {
 
-  try{
-    const{userId,allergies} = req.body;
-    for(const allergyName of allergies){
-      // Check if the user has allready the allergy saved
-       const {rows} = await pool.query('SELECT * FROM UserAllergens WHERE  UserId = $1 and AllergenID = (SELECT AllergenID FROM Allergens WHERE AllergenName = $2)',[userId,allergyName]);
-      if(rows.length === 0) {
-        // If the user doesn't have the allergy then insert it
-        const {  rows: allergensRows} = await pool.query('SELECT * FROM Allergens WHERE AllergenName =$1',[allergyName]);
-        if(allergensRows.length > 0){
-          const allergenId = allergensRows[0].allergenid;
-          // INsert into Userallergens
-          await pool.query('INSERT INTO UserAllergens (UserID,AllergenID) VALUES ($1,$2)',[userId,allergenId]);
 
-        }
+app.post('/user/allergies', async (req, res) => {
+  try {
+      const { userId, selected, deselected } = req.body;
+      
+      // Process selected allergies
+      for (const allergyName of selected) {
+          // Check if the user already has the allergy saved
+          const { rows } = await pool.query('SELECT * FROM UserAllergens WHERE  UserId = $1 and AllergenID = (SELECT AllergenID FROM Allergens WHERE AllergenName = $2)', [userId, allergyName]);
+          if (rows.length === 0) {
+              // If the user doesn't have the allergy, insert it
+              const { rows: allergensRows } = await pool.query('SELECT * FROM Allergens WHERE AllergenName =$1', [allergyName]);
+              if (allergensRows.length > 0) {
+                  const allergenId = allergensRows[0].allergenid;
+                  await pool.query('INSERT INTO UserAllergens (UserID,AllergenID) VALUES ($1,$2)', [userId, allergenId]);
+              }
+          }
+      }
 
-    }
+      // Process deselected allergies
+      for (const allergyName of deselected) {
+          // Check if the user has the allergy saved
+          const { rows } = await pool.query('SELECT * FROM UserAllergens WHERE  UserId = $1 and AllergenID = (SELECT AllergenID FROM Allergens WHERE AllergenName = $2)', [userId, allergyName]);
+          if (rows.length > 0) {
+              // If the user has the allergy, delete it
+              const { rows: allergensRows } = await pool.query('SELECT * FROM Allergens WHERE AllergenName =$1', [allergyName]);
+              if (allergensRows.length > 0) {
+                  const allergenId = allergensRows[0].allergenid;
+                  await pool.query('DELETE FROM UserAllergens WHERE UserID = $1 AND AllergenID = $2', [userId, allergenId]);
+              }
+          }
+      }
 
+      res.status(200).json({ message: 'Allergies saved successfully' });
+  } catch (error) {
+      console.error('Error saving allergies:', error);
+      res.status(500).json({ message: 'Error saving allergies' });
   }
-  res.status(200).json({message:'Allergies saved successfully'});
-    
+});
 
-  }catch (error){
-    console.error('Error saving allergies:', error);
-    res.status(500).json({ message: 'Error saving allergies.' });
-  }
-})
+
 
 app.post('add-meal',async (req,res) => {
   try{
@@ -383,7 +413,23 @@ app.post('/add-meal', async (req, res) => {
 
 
 
-//UPDATE
+//DELETE
+
+app.delete('/deletefood/:barcodeid', async (req, res) => {
+  const { barcodeid } = req.params;
+
+  try {
+    
+    await pool.query('DELETE FROM SCANNEDFOODS WHERE barcodeid = $1', [barcodeid]);
+
+    // Send a success response
+    res.json({ message: 'Item deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 
 

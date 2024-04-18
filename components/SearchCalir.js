@@ -101,7 +101,7 @@ const SearchCali = () => {
     <SafeAreaView>
       <Appbar>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title='Search Calories'/>
+        <Appbar.Content title='Count Nutrients' titleStyle={{ fontWeight: 'bold',fontFamily:'Avenir', }}/>
         
       </Appbar>
       <View style={styles.container}>
@@ -148,19 +148,19 @@ const SearchCali = () => {
             <View style={styles.cardContainer}>
               <View style={styles.leftContent}>
                 <Text style={styles.foodName}>{item.food_name}</Text>
-                <Text>Calories: {item.nf_calories||0}g</Text>
-                <Text>Protein: {item.nf_protein || 0}g</Text>
-                <Text>Carbs: {item.nf_total_carbohydrate || 0}g</Text>
-                <Text>Fat: {item.nf_total_fat || 0}g</Text>
-                <Text>Sugar: {item.nf_sugar || 0} g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Calories: {item.nf_calories||0}g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Protein: {item.nf_protein || 0}g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Carbs: {item.nf_total_carbohydrate || 0}g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Fat: {item.nf_total_fat || 0}g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Sugar: {item.nf_sugar || 0} g</Text>
               </View>
               <View style={styles.rightContent}>
                 <Image
                   source={{ uri: item.photo.thumb }}
                   style={styles.image}
                 />
-                <Text>Total items: {item.serving_qty}</Text>
-                <Button mode='contained' title='Add Meal' style={{ backgroundColor: 'green' }} onPress={() => handleAddMeal(item)} />
+                <Text style={{marginTop:10,fontWeight:800,fontFamily:'Avenir-Black',fontSize:16}}>Total items: {item.serving_qty}</Text>
+                <Button mode='contained' title='Add Meal' style={{ backgroundColor: 'green',fontFamily:'Avenir-Black' }} onPress={() => handleAddMeal(item)} />
               </View>
             </View>
           )}
@@ -173,11 +173,11 @@ const SearchCali = () => {
             <View style={styles.item}>
               <View style={styles.leftContent}>
                 <Text style={styles.foodName}>{item.product_name}</Text>
-                <Text>Calories: {item.nutriments?.energy_value || 'N/A'} kcal</Text>
-                <Text>Fat: {item.nutriments?.fat || 'N/A'} g</Text>
-                <Text>Protein: {item.nutriments?.proteins || 'N/A'} g</Text>
-                <Text>Carbs: {item.nutriments?.carbohydrates || 'N/A'} g</Text>
-                <Text>Sugar: {item.nutriments?.sugars || 'N/A'} g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Calories: {item.nutriments?.energy_value || 'N/A'} kcal</Text>
+                <Text style={{fontFamily:'Avenir'}}>Fat: {item.nutriments?.fat || 'N/A'} g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Protein: {item.nutriments?.proteins || 'N/A'} g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Carbs: {item.nutriments?.carbohydrates || 'N/A'} g</Text>
+                <Text style={{fontFamily:'Avenir'}}>Sugar: {item.nutriments?.sugars || 'N/A'} g</Text>
               </View>
               <View style={styles.rightContent}>
                 <Image
@@ -226,7 +226,9 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    elevation: 3, // for Android
+    elevation: 3, 
+    fontFamily:'Avenir',
+
   },
   
   heading: {
@@ -234,6 +236,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 0,
+    fontFamily:'Avenir-Black'
   },
 
   card: {
@@ -242,18 +245,6 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 10,
     width: '80%',
-  },
-  
-  cardContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: '#ccc',
-    width: '90%',
   },
 
   item: {
@@ -282,8 +273,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   foodName: {
-    fontWeight: 'bold',
+    fontWeight: '900',
     marginBottom: 5,
+    fontFamily:'Avenir-Black',
+    fontSize:16
   },
   image: {
     width: 100,
@@ -322,7 +315,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     borderColor: '#ccc',
-    backgroundColor: '#fff',
+    backgroundColor: '#feea99',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -330,7 +323,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    
   },
   
   

@@ -17,6 +17,8 @@ CREATE TABLE ScannedFoods (
     ProductID INT NOT NULL,
     ScanTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     BarcodeID INT NOT NULL,
+    ProductName VARCHAR(255),                                            
+    PhotoID VARCHAR(255),
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (ProductID) REFERENCES FoodProducts(ProductID)
 

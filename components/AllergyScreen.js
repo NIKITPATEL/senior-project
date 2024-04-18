@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView,Dimensions,Modal } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView,Dimensions,Modal,Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import { Appbar, Avatar,IconButton,List,Button } from 'react-native-paper';
 import { useUser } from './UserContext';
@@ -8,11 +8,42 @@ import axios from 'axios';
 
 const Allergy = () => {
     const navigation = useNavigation();
-    const [flashing, setFlashing] = useState('');
     const {userId} = useUser();
-
-    
+    const [userAllergies, setUserAllergies] = useState([]);
     const [selectedAllergies, setSelectedAllergies] = useState([]);
+
+    useEffect(() => {
+        // Fetch user's existing allergies from the backend
+        const fetchUserAllergies = async () => {
+            try {
+                const response = await axios.get(path + `/userallergies/${userId}`);
+                const userAllergies = response.data;
+                
+                // Merge the fetched allergies with the selected ones
+                const mergedAllergies = Array.from(new Set([...selectedAllergies, ...userAllergies]));
+                setSelectedAllergies(mergedAllergies);
+            } catch (error) {
+                console.error('Error fetching user allergies:', error);
+            }
+        };
+        fetchUserAllergies();
+    }, [userId]);
+    
+    useEffect(() => {
+        // Fetch user's existing allergies from the backend
+        const fetchUserAllergies = async () => {
+            try {
+                const response = await axios.get(path + `/userallergies/${userId}`);
+                const userAllergies = response.data;
+                setUserAllergies(userAllergies);
+            } catch (error) {
+                console.error('Error fetching user allergies:', error);
+            }
+        };
+        fetchUserAllergies();
+    }, [userId]);
+    
+    
    
 
     const handleback = () => {
@@ -28,34 +59,33 @@ const Allergy = () => {
     };  
 
     const handleSave = async () => {
-      try {
-        const response = await axios.post(path+'/user/allergies', {
-          userId:userId,
-          allergies:selectedAllergies,
+        try {
+            console.log('User Allergies:', userAllergies);
+            console.log('Selected Allergies:', selectedAllergies);
+            
+            // Filter out deselected allergies
+            const deselectedAllergies = userAllergies.filter(allergy => !selectedAllergies.includes(allergy));
+            console.log('Deselected Allergies:', deselectedAllergies);
+            
+            // Send both selected and deselected allergies to backend
+            await axios.post(path + '/user/allergies', {
+                userId: userId,
+                selected: selectedAllergies,
+                deselected: deselectedAllergies,
+            });
+            
+            Alert.alert('Allergies saved successfully');
+        } catch (error) {
+            console.error('Error saving allergies:', error);
+            Alert.alert('Unable to save');
+        }
+    };
+    
+    
 
-          
-        });
-        console.log(response.data);
 
-      }catch (error){
-        console.error('Error saving allergies:',error);
-
-      }
-
-    }
-
-
-
-  
-
-  
 
     // Initialize state to track allergen tolerance levels
-    
-    
-
-    
-    
 
     const allergy = [
         { name: 'Eggs', icon: 'egg' },
@@ -89,7 +119,7 @@ const Allergy = () => {
     ]
 
     return (
-      
+
             
                 
               
@@ -97,23 +127,26 @@ const Allergy = () => {
         <View>
                 <Appbar.Header>
                     <Appbar.BackAction onPress={handleback} />
+                    <Appbar.Content title='Allergies' titleStyle={{ fontWeight: 'bold',fontFamily:'Avenir' }} />
                 </Appbar.Header>
                 
                 
                 <ScrollView style={styles.scroll}>
                 <View style={styles.container}>
-                    <List.Section title="Allergies">
+                    <List.Section title="Allergies" titleStyle={{fontFamily:'Avenir',fontWeight:'bold'}}>
                         {allergy.map(({ name, icon, options }, index) => (
                             <React.Fragment key={index}>
                                 {options ? (
                                     <List.Accordion
                                         title={name}
+                                        titleStyle={{fontFamily:'Avenir',fontWeight:'bold'}}
                                         left={props => <List.Icon {...props} icon={icon} />}
                                     >
                                         {options.map((option, idx) => (
                                             <List.Item
                                                 key={idx}
                                                 title={option.name}
+                                                titleStyle={{fontFamily:'Avenir'}}
                                                 onPress={() => handleAllergyPress(option.name)}
                                                 style={[
                                                     styles.listItem,
@@ -125,6 +158,7 @@ const Allergy = () => {
                                 ) : (
                                     <List.Item
                                         title={name}
+                                        titleStyle={{fontFamily:'Avenir',fontWeight:'bold'}}
                                         left={props => <List.Icon {...props} icon={icon} />}
                                         onPress={() => handleAllergyPress(name)}
                                         style={[

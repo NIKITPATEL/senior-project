@@ -7,6 +7,7 @@ import axios from 'axios';
 const CartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Function to handle search query
   const handleSearch = async (searchQuery) => {
@@ -36,6 +37,14 @@ const CartScreen = () => {
     } catch (error) {
       console.error('Error fetching food items:', error);
     }
+  };
+
+  const handleCartPress = (productId) => {
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
   };
 
   
@@ -123,8 +132,9 @@ const CartScreen = () => {
         {/* Cart items */}
         <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={false}>
           {/* Render CartItem components dynamically based on products array */}
+          
           {cartItems.map((item, index) => (
-            <CartItem key={index} image={item.photo} productName={item.name} onPress={()=> handleCartPress(item.id)}/>
+            <CartItem key={index} image={item.photo} productName={item.name}/>
           ))}
         </ScrollView>
       </View>
@@ -143,11 +153,11 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap', // Allow multiple rows of cards
-    justifyContent: 'space-between', // Add space between cards
+    justifyContent: 'space-between', 
     margin:5,
   },
   scrollView: {
-    maxHeight: 100, // Set a maximum height for the ScrollView
+    maxHeight: 100, 
   },
   iconContainer: {
     alignItems: 'center',
@@ -167,6 +177,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 14,
     textAlign: 'center',
+    fontWeight:'500',
+    fontFamily:'Avenir'
   },
 });
 

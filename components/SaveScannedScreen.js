@@ -1,240 +1,245 @@
-import React,{useState,useEffect, useId} from 'react';
-import { Avatar, Card, IconButton,Divider,Appbar } from 'react-native-paper';
-import {Alert, Modal, StyleSheet, Text, Pressable, View,Button,ScrollView,Image,TouchableOpacity} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Avatar, Card, IconButton, Divider, Appbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View, TouchableOpacity, Modal, ScrollView, Image, Pressable } from 'react-native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import { useUser } from './UserContext';
 import { path } from './path';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native'
-
-
 
 const SaveScannedScreen = () => {
   const navigation = useNavigation();
-    const {userId} = useUser();
-    const [barcodeIds, setBarcodeIds] = useState([]);
-    const [text, setText] = useState('Not yet scanned')
-    const [brandName,setBrandName] = useState('');
-    const [glutten,setGlutten] = useState('');
-    const [ingredient,setIngredient] = useState("");
-    
-    const [modalVisible, setModalVisible] = useState(false);
-
-    useEffect(() => {
-        const fetchBarcodeIds = async () => {
-            try {
-                if (userId) {
-                    // Fetch barcode IDs for the logged-in user ID using Axios
-                    const response = await axios.get(path+`/savefood/${userId}`);
-                    setBarcodeIds(response.data.barcodeIds);
-                }
-            } catch (error) {
-                console.error('Error fetching barcode IDs:', error);
-            }
-        };
-
-        fetchBarcodeIds();
-    }, [userId]);
-
-    console.log(barcodeIds);
-
-    const handleCardPress = async (barcodeId) => {
-        barcodeId = parseInt(barcodeId);
-        console.log('Card Pressed',barcodeId);
-        setModalVisible(true);
-        
-        try{
-            const appId = 'c958ac11'; // Replace with your Nutritionix Application ID
-            const apiKey = '7d5e826cc223699c79497f63d820cf0a'; // Replace with your Nutritionix API key
-            const response = await axios.get(`https://trackapi.nutritionix.com/v2/search/item/?upc=${barcodeId}`, {
-            headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'x-app-id': appId,
-            'x-app-key': apiKey,
-            },
-            });
-            if (response.data && response.data.foods) {
-                const product = response.data.foods[0];
-                const brandName = product.brand_name || 'Product Name Not Available';
-                const ingredient = product.nf_ingredient_statement || 'Ingredient Not available';
-                const allergn = product.nf_allergens;
-                //const brand_image = product.
-                console.log('Product Name:', brandName);
-                console.log('Ingredients:',ingredient)
-                const isGlutenFree = product.nf_ingredient_statement.toLowerCase().includes('Gluten free');
-                setIngredient(ingredient)
-
-                if (isGlutenFree) {
-                console.log('This product is gluten-free.');
-                setGlutten("Gluteen Free");
-                
-                
-                } else {
-                console.log('This product may contain gluten.');
-                setGlutten("Not Glutten Free")
-                }
-                console.log('Allergn:',allergn);
-                setBrandName(brandName)
-                // Handle the product data as needed
-        } else {
-            console.error('No data found for the scanned value.');
-        }
-
-        }catch(error){
-            console.error('Error fetching data:', error.message);
-        }
+  const { userId } = useUser();
+  const [productNames, setProductNames] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedProductName, setSelectedProductName] = useState('');
+  const [brandName, setBrandName] = useState('');
+  const [ingredient, setIngredient] = useState('');
+  const [image,setImage] = useState('');
 
 
+  const handleDeleteItem = async (barcodeid) => {
+    try {
+      // Send a DELETE request to the backend to delete the item with the specified barcodeId
+      await axios.delete(path+`/deletefood/${barcodeid}`);
+      // After successful deletion, fetch scanned foods again to update the UI
+      fetchScannedFoods();
+    } catch (error) {
+      console.error('Error deleting item:', error);
     }
+  };
 
-    const handle_closemodal = () => {
-        setModalVisible(!modalVisible)
-        setIngredient("");
-        setBrandName("");
+  useEffect(() => {
+    const fetchScannedFoods = async () => {
+      try {
+        // Fetch scanned foods using Axios
+        const response = await axios.get(path + `/savefood/${userId}`);
+        console.log('Response from backend:', response.data); // Log the response data
+        setProductNames(response.data.scannedFoods);
+        console.log(productNames)
+      } catch (error) {
+        console.error('Error fetching scanned foods:', error);
+      }
+    };
+
+    fetchScannedFoods();
+  }, [userId]);
+  
+
+  const handleCardPress = async (productName) => {
+    setSelectedProductName(productName);
+    setModalVisible(true);
+
+    try {
+      const appId = 'c958ac11'; // Replace with your Nutritionix Application ID
+      const apiKey = '7d5e826cc223699c79497f63d820cf0a'; // Replace with your Nutritionix API key
+      const response = await axios.get(`https://trackapi.nutritionix.com/v2/search/item/?upc=${productName}`, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'x-app-id': appId,
+          'x-app-key': apiKey,
+        },
+      });
+      if (response.data && response.data.foods) {
+        const product = response.data.foods[0];
+        const brandName = product.brand_name || 'Product Name Not Available';
+        const ingredient = product.nf_ingredient_statement || 'Ingredient Not available';
+        setImage(product.photo && product.photo.thumb);
+      
+        setIngredient(ingredient);
+
+       
+        setBrandName(brandName);
+      } else {
+        console.error('No data found for the scanned value.');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
     }
+  }
 
-    const handleback = () => {
-      navigation.goBack();
-    }
-    
-    
+  
 
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedProductName('');
+    setBrandName('');
+    setIngredient('');
+  }
 
+  const handleBack = () => {
+    navigation.goBack();
+  }
 
-return (
-  <SafeAreaView>
-    <Appbar.Header>
-          <Appbar.BackAction onPress={handleback} />
-          <Appbar.Content title='Dietary'/>
-        </Appbar.Header>
+  return (
+    <SafeAreaView>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={handleBack} />
+        <Appbar.Content title='Dietary' titleStyle={{ fontWeight: 'bold',fontFamily:'Avenir-Black' }} />
+      </Appbar.Header>
 
-        <View>
-            {barcodeIds.map(barcodeId => (
-                <TouchableOpacity key={barcodeId} onPress={() => handleCardPress(barcodeId)}>
-                    <Card>
-                        <Card.Title
-                            title={barcodeId}
-                            left={(props) => <Avatar.Icon {...props} icon="folder" />}
-                            right={(props) => <IconButton {...props} icon="dots-vertical" />}
-                        />
-                    </Card>
-                </TouchableOpacity>
-            ))}
+      <View style={{marginTop:10}}>
+        {productNames.map(({ productname, barcodeid, photoid }, index) => (
+          <TouchableOpacity key={index} onPress={() => handleCardPress(barcodeid)}>
+            <Card style={{marginBottom:10}}>
+              <Card.Title
+                title={productname}
+                titleStyle={{ fontWeight: '700',fontFamily:'Avenir-Black',fontSize:20 }}
+                left={(props) => <Avatar.Image
+                  source={{ uri: photoid }}
+                  size={40} 
+                  style={{ marginRight: 10 }} 
+                />}
+                right={(props) => <IconButton {...props} icon="delete" onPress={() => handleDeleteItem(barcodeid)} />}
+              />
+            </Card>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={handleCloseModal}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <ScrollView>
+              {/* Product Image */}
+              <Image source={{ uri: image }} style={styles.modalImage} />
+
+              {/* Product Name */}
+              <Text style={styles.brandName}>{brandName}</Text>
+
+              {/* Ingredients */}
+              <Divider style={{marginVertical:10,height:2}} />
+              <Text style={styles.modalText}>Ingredients:</Text>
+              <Text style={styles.ingredient}>{ingredient}</Text>
+
+              {/* Close Button */}
+              <Pressable style={[styles.button, styles.buttonClose]} onPress={handleCloseModal}>
+                <Text style={styles.textStyle}>Close Modal</Text>
+              </Pressable>
+            </ScrollView>
+          </View>
         </View>
-        <View>
-            <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(!modalVisible)}>
-                
-                
-                <View style={styles.centeredView}>
-                
-                    <View style={styles.modalView}>
-                    <ScrollView>
-                    <Image style={styles.modalImage} />
-                    <Text style={styles.brandName}>{brandName}</Text>
-                    <Divider />
-                    <Text style={styles.modalText}>Ingredients:</Text>
-                    <Text style={styles.ingredient}>{ingredient}</Text>
-                    <Text style={styles.glutten}>{glutten}</Text>
-                    
-                    <Pressable style={[styles.button, styles.buttonClose]} onPress={() => handle_closemodal()}>
-                        <Text style={styles.textStyle}>Close Modal</Text>
-                    </Pressable>
-                    </ScrollView>
-                    </View>
-                    
-                </View>
-                
-            </Modal>
-        </View>
+      </Modal>
 
-    
-  </SafeAreaView>
-);
-
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barcodeBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '30%',
+    width: '80%',
+    overflow: 'hidden',
+    borderRadius: 30,
+    backgroundColor: 'tomato',
+  },
+  mainText: {
+    fontSize: 16,
+    margin: 20,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    height: '80%',
+    width: '80%',
+    backgroundColor: '#4c4c4c',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    barcodeBox: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '30%',
-      width: '80%',
-      overflow: 'hidden',
-      borderRadius: 30,
-      backgroundColor: 'tomato',
-    },
-    mainText: {
-      fontSize: 16,
-      margin: 20,
-    },
-    centeredView: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 22,
-    },
-    modalView: {
-      height: '90%',
-      width: '80%',
-      backgroundColor: '#E8EAF6',
-      borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    button: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-    },
-    buttonClose: {
-      backgroundColor: '#2196F3',
-      marginTop: 20,
-    },
-    textStyle: {
-      color: 'white',
-      fontWeight: 'bold',
-      textAlign: 'center',
-    },
-    modalText: {
-      fontSize: 20,
-      marginBottom: 20,
-      textAlign: 'center',
-    },
-    ingredient: {
-      fontSize: 10,
-      marginBottom: 20,
-      textAlign: 'center',
-    },
-    glutten: {
-      fontSize: 16,
-      textAlign: 'center',
-      backgroundColor:'orange'
-    },
-    modalImage: {
-      width: '40%',
-      height: '20%',
-      backgroundColor: 'tomato',
-      borderRadius: 10,
-    },
-    brandName: {
-      fontSize: 24,
-      textAlign: 'center',
-    },
-  });
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+    marginTop: 20,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    fontSize: 20,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontWeight:'600',
+    color:'white',
+    fontFamily:'Avenir-Black'
+  },
+  ingredient: {
+    fontSize: 15,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontWeight:'300',
+    color:'white',
+    fontFamily:'Avenir-Black'
 
+  },
+  glutten: {
+    fontSize: 16,
+    textAlign: 'center',
+    backgroundColor: 'orange',
+  },
+  modalImage: {
+    width: '80%', // Adjust width as needed
+    height: 200, 
+    marginBottom: 20,
+    alignSelf: 'center',
+    borderRadius: 10,
+    shadowColor: '#FFFFFF',
+    shadowOpacity: 0.8,
+    elevation: 5, 
+  },
+  brandName: {
+    fontSize: 24,
+    textAlign: 'center',
+    fontWeight:'900',
+    color:'white',
+    fontFamily:'Avenir-Black'
+  },
+});
 
 export default SaveScannedScreen;

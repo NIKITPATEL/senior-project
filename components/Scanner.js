@@ -12,6 +12,8 @@ import { useUser } from './UserContext';
 import { path } from './path';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Video, } from 'expo-av';
+import Typewriter from './Typewriter';
 
 const { width } = Dimensions.get('window');
 const SCALE = width / 375; // Adjust the base width (375) as needed
@@ -56,7 +58,7 @@ export default function Scanner () {
     const [proteinOutOfRange, setProteinOutOfRange] = useState(false);
     const [sugarOutOfRange, setSugarOutOfRange] = useState(false);
     const [fiberOutOfRange, setFiberOutOfRange] = useState(false);
-
+    const [rating,setRating] = useState('');
 
 
 
@@ -85,7 +87,8 @@ export default function Scanner () {
     const toggleAllergiesExpansion = () => {
       setIsAllergiesExpanded(!isAllergiesExpanded);
     };
-  
+
+    
 
     // Request Camera Permission
     useEffect(() => {
@@ -154,6 +157,24 @@ export default function Scanner () {
       }
     }, [modalVisible]);
 
+    useEffect(() => {
+      console.log('Unmatched Dietary:', unmatchedDietary);
+    }, [unmatchedDietary]);
+    
+    useEffect(() => {
+      console.log('Unmatched Allergy:', Array.from(unmatchedAllergy));
+    }, [unmatchedAllergy]);
+
+    useEffect(() => {
+      if(modalVisible){
+        checkProductMatchesDiet();
+      }
+      console.log('Lets see:',productMatchesDiet);
+      
+      
+    }, [unmatchedDietary, unmatchedAllergy]);
+    
+
 
     
     // What happens when we scan the bar code
@@ -200,9 +221,10 @@ export default function Scanner () {
               setCarbs(product.nf_total_carbohydrate || 'N/A');
               setProtein(product.nf_protein || 'N/A');
               setSugar(product.nf_sugars || 'N/A');
-              setFiber(product.nf_dietary_fiber || 'N/A')
+              setFiber(product.nf_dietary_fiber || 'N/A');
+              setRating(product.nf_rating || 'N/A')
 
-              console.log('Ingredients: ',ingredients)
+              //console.log('Ingredients: ',ingredients)
               setBrandName(productName);
               setIngredient(ingredients);
               setScanPhoto(productImage);
@@ -248,7 +270,7 @@ export default function Scanner () {
                   'Ghee'];
                 for (const dairyIngredient of dairyIngredients) {
                     if (lowercaseIngredientStatement.includes(dairyIngredient)) {
-                        console.log('Ingredient it contains: ',lowercaseIngredientStatement);
+                        //console.log('Ingredient it contains: ',lowercaseIngredientStatement);
                         return false; // Product contains 
                     }
                 }
@@ -366,6 +388,46 @@ export default function Scanner () {
                 return true;
               };
 
+              const isProductBeefFree = (ingredientStatement) => {
+                const lowercaseIngredientStatement = ingredientStatement.toLowerCase();
+                // Check if the ingredient statement contains beef
+                if (lowercaseIngredientStatement.includes('beef')) {
+                    return false; // Product contains beef
+                }
+                return true; // Product is beef-free
+            };
+            
+            const isProductPorkFree = (ingredientStatement) => {
+                const lowercaseIngredientStatement = ingredientStatement.toLowerCase();
+                // Check if the ingredient statement contains pork
+                if (lowercaseIngredientStatement.includes('pork')) {
+                    return false; // Product contains pork
+                }
+                return true; // Product is pork-free
+            };
+            
+            const isProductHalal = (ingredientStatement) => {
+                const lowercaseIngredientStatement = ingredientStatement.toLowerCase();
+                // Check if the ingredient statement contains any non-halal ingredients
+                const nonHalalIngredients = ['pork', 'gelatin', 'alcohol']; // Adjust as needed
+                for (const nonHalalIngredient of nonHalalIngredients) {
+                    if (lowercaseIngredientStatement.includes(nonHalalIngredient)) {
+                        return false; // Product contains non-halal ingredients
+                    }
+                }
+                return true; // Product is halal
+            };
+            
+            const isProductOrganic = (ingredientStatement) => {
+                const lowercaseIngredientStatement = ingredientStatement.toLowerCase();
+                // Check if the ingredient statement explicitly mentions "organic"
+                if (lowercaseIngredientStatement.includes('organic')) {
+                    return true; // Product is labeled as organic
+                }
+                return false; // Product is not labeled as organic
+            };
+            
+
 
               // Check if the ingredient statement contains "gluten free"
               const isGlutenFree = isProductGlutenFree(ingredients);
@@ -374,12 +436,21 @@ export default function Scanner () {
               const isNoEgg = isProductNoEgg(ingredients);
               const isVegetarian = isProductVegetarian(ingredients);
               const isVegan = isProductVegan(ingredients);
+              const noBeef = isProductBeefFree(ingredients);
+              const noPork = isProductPorkFree(ingredients);
+              const isHalal = isProductHalal(ingredients);
+              const isOrganic = isProductOrganic(ingredients);
               console.log('Is the product Gluten-Free: ',isGlutenFree);
               console.log('Is the product Dairy-Free: ',isDairyFree);
               console.log('Is the product Lactose-Free: ',isLactoseFree);
               console.log('Is the product No Egg: ',isNoEgg);
               console.log('Is the product Vegetarian: ',isVegetarian);
               console.log('Is the product Vegan: ',isVegan);
+              console.log('Is the product no beef: ',noBeef);
+              console.log('Is the product no pork: ',noPork);
+              console.log('Is the product Halal: ',isHalal);
+              console.log('Is the product Organic: ',isOrganic);
+              
 
               // Assuming you have already extracted allergens from the scanned item
               const allergensInProduct = [
@@ -388,7 +459,12 @@ export default function Scanner () {
                   { name: 'Lactose Free', isPresent: isLactoseFree },
                   { name: 'No Egg', isPresent: isNoEgg },
                   { name: 'Vegetarian', isPresent: isVegetarian },
-                  { name: 'Vegan', isPresent: isVegan }
+                  { name: 'Vegan', isPresent: isVegan },
+                  { name: 'No beef', isPresent: noBeef },
+                  { name: 'No pork', isPresent: noPork },
+                  { name: 'Halal', isPresent: isHalal },
+                  { name: 'Organic', isPresent: isOrganic },
+
               ];
 
               
@@ -411,6 +487,7 @@ export default function Scanner () {
                 }
               });
               setUnmatchedDietary(unmatched);
+              console.log(unmatchedDietary);
               
 
               
@@ -432,7 +509,7 @@ export default function Scanner () {
                     const normalizedAllergy = allergy.toLowerCase();
                     // Check if the ingredient contains the allergy (case insensitive)
                     const containsAllergy = normalizedIngredient.includes(normalizedAllergy);
-                    console.log(`Checking ingredient "${normalizedIngredient}" for allergy "${normalizedAllergy}": ${containsAllergy}`);
+                    //console.log(`Checking ingredient "${normalizedIngredient}" for allergy "${normalizedAllergy}": ${containsAllergy}`);
                     // If a matching allergy is found and it's not already in the array, add it to the array
                     if (containsAllergy) {
                       console.log('Found allergy:', allergy);
@@ -449,68 +526,14 @@ export default function Scanner () {
                   }
                 });
               });
-
               
-                // Check if both unmatched dietary and unmatched allergy arrays are empty
-                if (unmatchedDietary.length > 0 && Array.from(unmatchedAllergy).length > 0) {
-                  setProductMatchesDiet(false);
-                } else {
-                  setProductMatchesDiet(true);
-                }
-
-                console.log('True or false:',productMatchesDiet);
               
+               
 
-              
 
-              
-              //etBrandName(productName)
-            /*
-         const appId = 'c958ac11'; // Replace with your Nutritionix Application ID
-        const apiKey = '7d5e826cc223699c79497f63d820cf0a'; // Replace with your Nutritionix API key
-        const upc = encodeURIComponent(data); // Replace with the UPC you want to search
-        setBarcodeNumber(upc);
 
-        const response = await axios.get(`https://trackapi.nutritionix.com/v2/search/item/?upc=${upc}`, {
-            headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'x-app-id': appId,
-            'x-app-key': apiKey,
-            },
-        });
-
-            if (response.data && response.data.foods) {
-              const product = response.data.foods[0];
-              const brandName = product.brand_name || 'Product Name Not Available';
-              const ingredient = product.nf_ingredient_statement || 'Ingredient Not available';
-              const allergn = product.nf_allergens;
-
-              console.log('Product Name:', brandName);
-              console.log('Ingredients:', ingredient);
-
-              const isGlutenFree = product.nf_ingredient_statement.toLowerCase().includes('gluten free');
-              console.log('Hello:',product.nf_ingredient_statement)
-              
-              setIngredient(ingredient);
-
-              if (isGlutenFree) {
-                  console.log('This product is gluten-free.');
-                  //setGluten("Gluten Free");
-              } else {
-                  console.log('This product may contain gluten.');
-                  //setGluten("Not Gluten Free");
-              }
-
-              console.log('Allergen:', allergn);
-              setBrandName(brandName);
-
-              // Find user preferences contained in the ingredient
-              console.log(preferences)
-              const userPreferencesContained =  preferences.filter(preference =>
-                ingredient.toLowerCase().includes(preference.toLowerCase())
-              );
-              console.log('User preferences contained in the ingredient:', userPreferencesContained);
-              */
+        
+        
               // Perform any action you want here with the user preferences contained in the ingredient
 
                 const foodName = product.food_name
@@ -552,132 +575,172 @@ export default function Scanner () {
               console.log('Type: ' + type + '\nData: ' + data)
           };
 
-    const saveScannedProduct = async () => {
-      const body = {
-          userId: userId,
-          productId: barcodeNumber,
-          barcodeId: barcodeNumber
-      };
-  
-      try {
-          const request = await fetch(path + '/save_scanned', {
-              method: "POST",
-              headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(body)
-          });
-  
-          if (!request.ok) {
-              throw new Error(`HTTP error! Status: ${request.status}`);
-          }
-  
-          const response = await request.json();
-          console.log(response);
-      } catch (error) {
-        
-          console.log('Cannot save')
+
+          const handleAddMeal = async () => {
+            try {
+              // Prepare the meal data
+              const mealData = {
+                userId: userId, // Assuming you have the user ID available
+                calories: calories,
+                protein: protein,
+                carbs: carbs,
+                fats: fat,
+                sugar: sugar, // Add sugar value if available
+              };
           
+              // Send a POST request to add the meal to the database
+              const response = await axios.post(path + '/add-meal', mealData);
           
-      }
-  };
-  
-
-    // Check permissions and return the screens
-    if (hasPermission === null) {
-        return (
-        <View style={styles.container}>
-            <Text>Requesting for camera permission</Text>
-        </View>)
-    }
-    if (hasPermission === false) {
-        return (
-        <View style={styles.container}>
-            <Text style={{ margin: 10 }}>No access to camera</Text>
-            <Button title={'Allow Camera'} onPress={() => askForCameraPermission()} />
-        </View>)
-    }
-
-    const fetchUserNutrients = async (userId) => {
-      try {
-        const response = await axios.get(path + `/user-nutrients/${userId}`);
-        const userNutrients = response.data.map(nutrient => ({
-          nutrientName: nutrient.nutrient_name,
-          min: nutrient.nutrient_min,
-          max: nutrient.nutrient_max
-        }));
-        console.log('user nutrients:' ,userNutrients);
-        return userNutrients; // Return the formatted user nutrients data
-        
-      } catch (error) {
-        console.error('Error fetching user nutrients:', error);
-        return null; // Return null in case of an error
-      }
-    };
-
-    console.log('checking :',carbsOutOfRange)
-
-    const compareUserNutrientsWithValues = (userNutrients) => {
-      userNutrients.forEach(nutrient => {
-        switch (nutrient.nutrientName) {
-          case 'protein':
-            if (protein !== 'N/A' && (protein < nutrient.min || protein > nutrient.max)) {
-              setProteinOutOfRange(true);
+              // Handle the response if needed
+              console.log('Meal added:', response.data);
+              Alert.alert('Meal added');
+            } catch (error) {
+              console.error('Error adding meal:', error);
             }
-            break;
-          case 'carbs':
-            if (carbs !== 'N/A' && (carbs < nutrient.min || carbs > nutrient.max)) {
-              setCarbsOutOfRange(true);
-            }
-            break;
-            break;
-          case 'calories':
-            if (calories !== 'N/A' && (calories < nutrient.min || calories > nutrient.max)) {
-              setCaloriesOutOfRange(true);
-            }
-            break;
-          case 'sugar':
-            if (sugar !== 'N/A' && (sugar < nutrient.min || sugar > nutrient.max)) {
-              setSugarOutOfRange(true);
-              
-            }
-            break;
-          case 'fiber':
-            if (carbs !== 'N/A' && (fiber < nutrient.min || fiber > nutrient.max)) {
+          };
 
-                setFiberOutOfRange(true);
+      const saveScannedProduct = async () => {
+        const body = {
+            userId: userId,
+            productId: barcodeNumber,
+            barcodeId: barcodeNumber,
+            productName: brandName,
+            photoId:scanPhoto,
+        };
+    
+        try {
+            const request = await fetch(path + '/save_scanned', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body)
+            });
+    
+            if (!request.ok) {
+                throw new Error(`HTTP error! Status: ${request.status}`);
             }
-            break;
-
-          case 'fat':
-            if (carbs !== 'N/A' && (fat < nutrient.min || fat > nutrient.max)) {
-                  setFatOutOfRange(true);
-            }
-            break;
-
-          // Add cases for other nutrients as needed
-          default:
-            break;
+    
+            const response = await request.json();
+            console.log(response);
+            Alert.alert('Item saved')
+        } catch (error) {
+          
+            console.log('Cannot save')
+            
+            
         }
-      });
+      
     };
     
-    
-        
-    
-    
-    
-    
 
-    const handle_closemodal = () => {
-        setModalVisible(!modalVisible)
-        setIngredient("");
-        setBrandName("");
-        setDietaryPreferences([]);
-        setUnmatchedAllergy([]);
-        setUnmatchedDietary([]);
-        setCaloriesOutOfRange(false);
+      // Check permissions and return the screens
+      if (hasPermission === null) {
+          return (
+          <View style={styles.container}>
+              <Text>Requesting for camera permission</Text>
+          </View>)
+      }
+      if (hasPermission === false) {
+          return (
+          <View style={styles.container}>
+              <Text style={{ margin: 10 }}>No access to camera</Text>
+              <Button title={'Allow Camera'} onPress={() => askForCameraPermission()} />
+          </View>)
+      }
+
+      const fetchUserNutrients = async (userId) => {
+        try {
+          const response = await axios.get(path + `/user-nutrients/${userId}`);
+          const userNutrients = response.data.map(nutrient => ({
+            nutrientName: nutrient.nutrient_name,
+            min: nutrient.nutrient_min,
+            max: nutrient.nutrient_max
+          }));
+          console.log('user nutrients:' ,userNutrients);
+          return userNutrients; // Return the formatted user nutrients data
+          
+        } catch (error) {
+          console.error('Error fetching user nutrients:', error);
+          return null; // Return null in case of an error
+        }
+      };
+
+      // Check if both unmatched dietary and unmatched allergy arrays are empty
+      const checkProductMatchesDiet = () => {
+        // Check if both unmatched dietary and unmatched allergy arrays are empty
+        if (unmatchedDietary.length > 0 || Array.from(unmatchedAllergy).length > 0) {
+          setProductMatchesDiet(false);
+        } else {
+          setProductMatchesDiet(true);
+        }
+      };
+
+      
+
+      const compareUserNutrientsWithValues = (userNutrients) => {
+        userNutrients.forEach(nutrient => {
+          switch (nutrient.nutrientName) {
+            case 'protein':
+              if (protein !== 'N/A' && (protein < nutrient.min || protein > nutrient.max)) {
+                setProteinOutOfRange(true);
+              }
+              break;
+            case 'carbs':
+              if (carbs !== 'N/A' && (carbs < nutrient.min || carbs > nutrient.max)) {
+                setCarbsOutOfRange(true);
+              }
+              break;
+              break;
+            case 'calories':
+              if (calories !== 'N/A' && (calories < nutrient.min || calories > nutrient.max)) {
+                setCaloriesOutOfRange(true);
+              }
+              break;
+            case 'sugar':
+              if (sugar !== 'N/A' && (sugar < nutrient.min || sugar > nutrient.max)) {
+                setSugarOutOfRange(true);
+                
+              }
+              break;
+            case 'fiber':
+              if (carbs !== 'N/A' && (fiber < nutrient.min || fiber > nutrient.max)) {
+
+                  setFiberOutOfRange(true);
+              }
+              break;
+
+            case 'fat':
+              if (carbs !== 'N/A' && (fat < nutrient.min || fat > nutrient.max)) {
+                    setFatOutOfRange(true);
+              }
+              break;
+
+            // Add cases for other nutrients as needed
+            default:
+              break;
+          }
+        });
+      };
+
+      
+      
+      
+          
+      
+      
+      
+      
+
+      const handle_closemodal = () => {
+          setModalVisible(!modalVisible)
+          setIngredient("");
+          setBrandName("");
+          setDietaryPreferences([]);
+          setUnmatchedAllergy([]);
+          setUnmatchedDietary([]);
+          setCaloriesOutOfRange(false);
         setCarbsOutOfRange(false);
         setProteinOutOfRange(false);
         setSugarOutOfRange(false);
@@ -698,11 +761,19 @@ export default function Scanner () {
         <SafeAreaView style={styles.safeAreaView} >
           <Appbar>
             <Appbar.BackAction onPress={() => navigation.goBack()} />
-            <Appbar.Content title='Search Calories'/>
+            <Appbar.Content title='Search Calories' titleStyle={{ fontWeight: 'bold' ,fontFamily:'Avenir-Black' }}/>
             
           </Appbar>
+
+
           
           <View style={styles.container}>
+
+            
+
+            
+
+          
             <View style={styles.barcodeBox}>
               <BarCodeScanner
                 onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -726,7 +797,48 @@ export default function Scanner () {
             </View>
             <Text style={styles.mainText}>{text}</Text>
             {scanned && <Button title="Scan Again" onPress={() => setScanned(false)} color="tomato" />}
+            <View style={styles.videoContainer}>
+              <View style={styles.videoIcon}>
+                <Video
+                  source={require('../assets/qr-code.mp4')}
+                  style={styles.video}
+                  resizeMode="cover"
+                  shouldPlay
+                  isLooping
+                  controls={false}
+                  repeat={true}
+                />
+              </View>
+              <View style={styles.space} />
+              <View style={styles.videoIcon}>
+                <Video
+                  source={require('../assets/looking.mp4')}
+                  style={styles.video}
+                  controls={false}
+                  resizeMode="cover"
+                  shouldPlay
+                  isLooping
+                  repeat={true}
+                />
+              </View>
+              <View style={styles.space} />
+              <View style={styles.videoIcon}>
+                <Video
+                  source={require('../assets/satay.mp4')}
+                  style={styles.video}
+                  resizeMode="cover"
+                  shouldPlay
+                  isLooping
+                  controls={false}
+                  repeat={true}
+                />
+              </View>
+              <View style={styles.space} />
+              {/* Add more Video components as needed */}
+            </View>
             {/* Rest of your components */}
+
+            
           
             
             <Modal
@@ -745,21 +857,23 @@ export default function Scanner () {
                       {/* Product details */}
                       <View style={styles.productDetails}>
                         {/* Product name */}
-                        <Text style={{color:'white',fontWeight:'900',fontSize:'20%',marginBottom:5,}}>{brandName}</Text>
-                        
-                        {/* Save icon and rating */}
-                        <View style={styles.saveRatingContainer}>
-                          {/* Save icon */}
-                          <IconButton iconColor='white' icon="bookmark" size={24} onPress={saveScannedProduct} />
-                          
-                          {/* Rating */}
-                          <View style={styles.ratingContainer}>
-                            {/* Rating capsule */}
+                        <Text style={{color:'white',fontWeight:'900',fontSize:24,marginBottom:25, fontFamily:'Avenir-Black'}}>{brandName}</Text>
+
+                        <View style={{flexDirection: 'row', alignItems: 'center' }}>
                             <IconButton iconColor='gold' icon="star" size={24}/>
                             <View style={styles.ratingCapsule}>
-                              <Text style={styles.ratingText}>4.5</Text>
+                              <Text style={styles.ratingText}>{rating}</Text>
                             </View>
-                          </View>
+                            
+                        </View>
+                      
+                        
+                        
+                            {/* Save icon */}
+                        <View style={{flexDirection:'row'}}>
+                            <IconButton iconColor='white' icon="bookmark" size={24} onPress={saveScannedProduct} style={{marginRight:25}} />
+                            <IconButton iconColor='white' icon="food" size={24} onPress={handleAddMeal} style={{marginLeft:25}}/>
+
                         </View>
                       </View>
                     </View>
@@ -802,16 +916,16 @@ export default function Scanner () {
                     <View style={styles.matched}>
                       {Array.from(unmatchedAllergy).length > 0 && (
                         <View style={[styles.matchedContainer, styles.allergyContainer]}>
-                          <Text style={{color:'white'}}>
-                            Allergies: {Array.from(unmatchedAllergy).join(', ')}
+                          <Text style={{color:'white',fontFamily:'Avenir-Black'}}>
+                            It contains: {Array.from(unmatchedAllergy).join(', ')}
                           </Text>
                         </View>
                       )}
                       
                       {unmatchedDietary.length > 0 && (
                         <View style={[styles.matchedContainer, styles.dietaryContainer]}>
-                          <Text style={{color:'white'}}>
-                            Dietary Preferences: {unmatchedDietary.join(', ')}
+                          <Text style={{color:'white',fontFamily:'Avenir-Black'}}>
+                            Is Not: {unmatchedDietary.join(', ')}
                           </Text>
                         </View>
                       )}
@@ -820,17 +934,18 @@ export default function Scanner () {
 
                     
 
-
+                    
                     <View>
                       {productMatchesDiet ? (
-                        <View style={[styles.dietMessage, styles.negativeDietMessage]}>
-                          <Text style={styles.dietMessageText}>This product doesn't match your diet</Text>
-                          <IconButton icon="thumb-down" iconColor="red" />
-                        </View>
-                      ) : (
                         <View style={[styles.dietMessage, styles.positiveDietMessage]}>
                           <Text style={styles.dietMessageText}>This product fits your diet</Text>
                           <IconButton icon="thumb-up" iconColor='green' />
+                        </View>
+                        
+                      ) : (
+                        <View style={[styles.dietMessage, styles.negativeDietMessage]}>
+                          <Text style={styles.dietMessageText}>This product doesn't match your diet</Text>
+                          <IconButton icon="thumb-down" iconColor="red" />
                         </View>
                       )}
                     </View>
@@ -857,7 +972,7 @@ export default function Scanner () {
                     {showIngredients && (
                       <View style={styles.expandedIngredients}>
                         {/* Render the list of ingredients here */}
-                        <Text>{ingredient}</Text>
+                        <Text style={{fontWeight:'400',fontFamily:'Avenir-Black'}}>{ingredient}</Text>
                         
                       </View>
                     )}
@@ -878,7 +993,7 @@ export default function Scanner () {
                           {isDietExpanded && (
                             <View style={styles.expandedContent}>
                               {/* Content for Diet Preferences */}
-                              <Text>{displayDiet}</Text>
+                              <Text style={{fontWeight:'300', fontFamily:'Avenir-Black'}}>{displayDiet}</Text>
                             </View>
                           )}
                         </View>
@@ -896,7 +1011,7 @@ export default function Scanner () {
                           {isAllergiesExpanded && (
                             <View style={styles.expandedContent}>
                               {/* Content for Allergies */}
-                              <Text>{displayAllergy}</Text>
+                              <Text style={{fontWeight:'300',fontFamily:'Avenir-Black'}}>{displayAllergy}</Text>
                             </View>
                           )}
                         </View>
@@ -975,11 +1090,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   barcodeBox: {
-    width: '80%', // Adjust the width as needed
-    aspectRatio: 2, // Adjust aspect ratio for rectangle shape
+    width: '80%', 
+    aspectRatio: 2,
     overflow: 'hidden',
-    borderRadius: 20, // Adjust border radius for capsule shape
-    backgroundColor: '#fff', // Background color
+    borderRadius: 20, 
+    backgroundColor: '#fff', 
     shadowColor: '#000', // Shadow color
     shadowOffset: {
       width: 0,
@@ -1002,11 +1117,12 @@ const styles = StyleSheet.create({
     left: 0,
     width: 2, // Adjust the width of the line
     height: '100%',
-    backgroundColor: 'white', // Adjust the color of the line
+    backgroundColor: 'white', 
   },
   mainText: {
-    fontSize: 16 * SCALE, // Adjust the base font size (16) as needed
-    margin: 20 * SCALE, // Adjust other properties as needed
+    fontSize: 16 * SCALE, 
+    margin: 20 * SCALE, 
+    fontFamily:'Avenir'
   },
   centeredView: {
     flex: 1,
@@ -1041,21 +1157,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     
-    shadowColor: 'white', // White shadow color
-    shadowOpacity: 1.5, // Adjust shadow opacity as needed
+    shadowColor: 'white', 
+    shadowOpacity: 1.5, 
     shadowRadius: 15,
     shadowOffset: { width: 0, height: 2 },
     elevation: 5,
   },
   productDetails: {
-    flex: 1, // Take remaining space
-    marginLeft: 10, // Add some space between image and details
+    flex: 1, 
+    marginLeft: 10, 
     alignItems:'center'
   },
   saveRatingContainer: {
-    flexDirection: 'row', // Align save icon and rating horizontally
-    alignItems: 'center', // Align items vertically
-    marginTop:50,
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginTop:20,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -1070,20 +1186,44 @@ const styles = StyleSheet.create({
   ratingText: {
     color: 'black',
     fontSize: 16, 
+    fontFamily:'Avenir-Black'
+  },
+  videoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop:10,
     
   },
+  videoIcon: {
+    width: 80, 
+    height: 80, 
+    marginHorizontal:10,
+  },
+  video: {
+    flex: 1,
+    resizeMode: 'cover',
+    borderRadius:20,
+  },
+  space: {
+    width: 10, // Adjust space width as needed
+  },
   modalText: {
-    marginTop: 10 * SCALE, // Adjust the margin based on screen size
-    fontSize: 16 * SCALE, // Adjust the font size based on screen size
+    marginTop: 10 * SCALE, 
+    fontSize: 16 * SCALE, 
+    fontFamily:'Avenir-Black'
   },
   ingredient: {
-    fontSize: 14 * SCALE, // Adjust the font size based on screen size
+    fontSize: 14 * SCALE, 
+    fontFamily:'Avenir-Black'
   },
   allergenInfo: {
-    fontSize: 14 * SCALE, // Adjust the font size based on screen size
+    fontSize: 14 * SCALE, 
+    fontFamily:'Avenir-Black'
   },
   dietaryPreferences: {
-    fontSize: 14 * SCALE, // Adjust the font size based on screen size
+    fontSize: 14 * SCALE, 
+    fontFamily:'Avenir-Black'
   },
   button: {
     borderRadius: 20,
@@ -1098,13 +1238,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontFamily:'Avenir-Black'
   },
   sectionTitle: {
     color:'white',
     fontSize: 20 * SCALE, 
-    fontWeight: 'bold',
+    fontWeight: '900',
     marginLeft: 10 * SCALE,
     marginBottom: 10 * SCALE, 
+    fontFamily:'Avenir-Black'
   },
   nutritionContainer: {
     flexDirection: 'row',
@@ -1130,30 +1272,34 @@ const styles = StyleSheet.create({
 
 },
   nutrientTitle: {
-    fontSize: 10 * SCALE, // Adjust the font size based on screen size
-    fontWeight: 'bold',
-    marginBottom: 5 * SCALE, // Adjust the margin based on screen size
+    fontSize: 10 * SCALE, 
+    fontWeight: '800',
+    marginBottom: 5 * SCALE, 
+    fontFamily:'Avenir-Black'
   },
   nutrientValue: {
-    fontSize: 14 * SCALE, // Adjust the font size based on screen size
+    fontSize: 14 * SCALE, 
+    fontWeight:'400',
+    fontFamily:'Avenir-Black'
   },
   
   dietMessage: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Align items to the start and end of the container
+    justifyContent: 'space-between', 
     paddingHorizontal: 5,
     
     borderRadius: 30,
   },
   positiveDietMessage: {
-    backgroundColor: '#e6ffe6', // Faded green background color
+    backgroundColor: '#e6ffe6', 
   },
   negativeDietMessage: {
-    backgroundColor: '#ffe6e6', // Faded red background color
+    backgroundColor: '#ffe6e6',
   },
   dietMessageText: {
     marginLeft: 10,
+    fontFamily:'Avenir-Black'
     
   },
   ingredientsContainer: {
@@ -1168,7 +1314,8 @@ const styles = StyleSheet.create({
   },
   ingredientsTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '800',
+    fontFamily:'Avenir-Black'
   },
   expandedIngredients: {
     paddingHorizontal: 20,
@@ -1197,7 +1344,8 @@ const styles = StyleSheet.create({
   },
   capsuleText: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '800',
+    fontFamily:'Avenir-Black'
     
   },
   expandedContent: {
@@ -1208,11 +1356,10 @@ const styles = StyleSheet.create({
   },
   recommedContainer: {
     flex: 1,
-    // Add your container styles here
     },
     cardContainer: {
       marginHorizontal: 10,
-      // Add your card container styles here
+      
   },
   card: {
       width: 150,
@@ -1220,7 +1367,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       borderRadius: 10,
       padding: 5,
-      justifyContent: 'flex-end', // Align items at the bottom
+      justifyContent: 'flex-end', 
       alignItems: 'center',
       shadowColor: '#000',
       shadowOffset: {
@@ -1250,14 +1397,15 @@ const styles = StyleSheet.create({
   caloriesText: {
       color: '#fff', // Example text color
       fontSize: 12,
-      // Add your calories text styles here
+      fontFamily:'Avenir-Black'
   },
   productName: {
       fontSize: 16,
       fontWeight: 'bold',
-      color:'white'
+      color:'white',
+      fontFamily:'Avenir-Black'
       
-  // Add your product name styles here
+  
   },
   // Styles for product name container
   productNameContainer: {
@@ -1277,21 +1425,22 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       textAlign: 'center',
       color:'white',
+      fontFamily:'Avenir-Black'
   },
   errorMessageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'white', // Background color of the capsule view
+    backgroundColor: 'white', 
     borderRadius: 30,
     paddingHorizontal:20,
-    marginTop: 10, // Adjust as needed
+    marginTop: 10, 
   },
   errorMessage: {
     flex: 1,
   },
   errorMessageText: {
-    color: 'red', // Text color of the error message
+    color: 'red', 
   },
   matched: {
     justifyContent: 'center',
@@ -1308,10 +1457,11 @@ const styles = StyleSheet.create({
     marginBottom:10,
   },
   dietaryContainer: {
-    backgroundColor: 'orange', // You can choose your desired color for dietary preferences
+    backgroundColor: 'orange', 
   },
   text: {
     color: 'white',
+    fontFamily:'Avenir-Black'
   },
 
 });

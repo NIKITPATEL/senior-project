@@ -68,7 +68,7 @@ const RecipeScreen = () => {
         <View style={styles.header}>
           <Appbar>
             <Appbar.BackAction onPress={() => { navigation.goBack(); }} />
-            <Appbar.Content title='Search Recipes' />
+            <Appbar.Content title='Search Recipes' titleStyle={{ fontWeight: 'bold',fontFamily:'Avenir-Black' }}/>
           </Appbar>
         </View>
 
@@ -135,10 +135,10 @@ const RecipeScreen = () => {
                 </View>
                 {/* Ingredients */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text>Calories: {recipeDetails.calories.toFixed(2)}</Text>
-                  <Text>Total Servings: 2</Text>
+                  <Text style={{fontWeight:'700',fontFamily:'Avenir-Black'}}>Calories: {recipeDetails.calories.toFixed(2)}</Text>
+                  <Text style={{fontWeight:'700',fontFamily:'Avenir-Black'}}>Total Servings: 2</Text>
                 </View>
-                <View style={{flexDirection: 'row',alignItems: 'center', justifyContent:'space-between',marginTop:10, }}>
+                <View style={{flexDirection: 'row',alignItems: 'center', justifyContent:'space-between',marginTop:15, }}>
                   
                   <Image source={require('../assets/cooking.png')} style={styles.cook} />
                   <Image source={require('../assets/seasoning.png')} style={styles.cook}/>
@@ -154,7 +154,7 @@ const RecipeScreen = () => {
                 </ScrollView>
 
                 <TouchableOpacity onPress={() => Linking.openURL(recipeDetails.url)}>
-                  <Text style={{ color: 'blue', textDecorationLine: 'underline' }}>
+                  <Text style={{ color: 'blue', textDecorationLine: 'underline' , textAlign:'center',fontSize:18,fontFamily:'Avenir-Black'}}>
                     Click here for instructions
                   </Text>
                 </TouchableOpacity>
@@ -182,13 +182,14 @@ const styles = StyleSheet.create({
   },
   animeContainer: {
     backgroundColor: '#c1e3b6', // Background color
-    borderRadius: 20, // Capsule shape with border radius
+    borderRadius: 20, 
     padding: 10,
     margin: 10,
   },
   text: {
     fontSize: 16,
-    color: '#333', // Text color
+    color: '#333',
+    fontFamily:'Avenir',
     textAlign: 'center',
   },
   input: {
@@ -238,6 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingVertical: 10,
     paddingHorizontal: 10,
+    fontFamily:'Avenir-Black'
   },
   modalContainer: {
     flex: 1,
@@ -251,11 +253,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    fontFamily:'Avenir-Black'
   },
   modalSubtitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '800',
     marginTop: 20,
+    fontFamily:'Avenir-Black'
   },
   mealImageContainer: {
     alignItems: 'center',
@@ -269,7 +273,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 100,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -277,10 +281,12 @@ const styles = StyleSheet.create({
   },
   ingredientsContainer: {
     maxHeight: 200,
+    marginVertical:10,
   },
   ingredient: {
     fontSize: 16,
     marginBottom: 10,
+    fontFamily:'Avenir'
   },
   stepsContainer: {
     maxHeight: 300,

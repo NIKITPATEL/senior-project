@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -41,8 +41,6 @@ const SECTIONS = [
         { label: 'Allergies'},
         { label: 'Custom Nutrients' },
         { label: 'More' },
-        { label: 'Search Ingredients and give the option' },
-        { label: 'Accessibility mode'},
     ],
   },
   {
@@ -60,15 +58,12 @@ const SECTIONS = [
 
 export default function Profile() {
   const [value, setValue] = React.useState(0);
-  const{username} = useUser();
+  const{username,userEmail} = useUser();
   const navigation = useNavigation();
-
-
-
-
-
-
   
+
+
+
   const { tabs, items } = React.useMemo(() => {
     return {
       tabs: SECTIONS.map(({ header, icon }) => ({
@@ -84,19 +79,13 @@ export default function Profile() {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Settings</Text>
-
-          <Text style={styles.subtitle}>
-            Lorem ipsum dolor sit amet consectetur.
-          </Text>
         </View>
 
         <View style={styles.profile}>
           <View style={styles.profileHeader}>
             <Image
               alt=""
-              source={{
-                uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80',
-              }}
+              source={require('../assets/profile.png')}
               style={styles.profileAvatar} />
 
             <View>
@@ -104,7 +93,7 @@ export default function Profile() {
               
               <Text style={styles.profileName}>{username}</Text>
 
-              <Text style={styles.profileHandle}>@john.doe</Text>
+              <Text style={styles.profileHandle}>{userEmail}</Text>
             </View>
           </View>
 
@@ -178,6 +167,10 @@ export default function Profile() {
                        
                       case 'Custom Nutrients':
                         navigation.navigate('customAllergy');
+                        break;
+                      
+                      case 'More':
+                        navigation.navigate('nutrientcalcul');
                         break;
                         
                       

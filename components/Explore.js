@@ -13,8 +13,8 @@ const DishCard = ({ dishData, cardColor,onCardPress }) => {
       dishCard: {
         marginHorizontal: 10,
         borderRadius: 10,
-        width: 200, // Adjust based on your requirement
-        height: 350, // Adjust based on your requirement
+        width: 200, 
+        height: 350, 
         backgroundColor: cardColor,
       },
       imageContainer: {
@@ -29,22 +29,32 @@ const DishCard = ({ dishData, cardColor,onCardPress }) => {
         position: 'absolute',
         top: 0,
         right: 0,
-        borderTopLeftRadius:10,
-        borderBottomRightRadius:10,
+        borderTopLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        
       },
+      
       detailsContainer: {
-        paddingTop: 45, // Adjusted based on the smaller card height
+        paddingTop: 45, 
         padding: 10,
-        height: '50%', // Adjusted based on the smaller card height
+        height: '50%', 
       },
       dishName: {
-        fontSize: 17, // Adjusted font size
-        fontWeight: 'bold',
+        fontSize: 17, 
+        fontWeight: '900',
         marginBottom: 5,
+        fontFamily:'Avenir-Black'
       },
       starsContainer: {
         flexDirection: 'row',
-        marginBottom: 5, // Adjusted based on the smaller card height
+        marginBottom: 5, 
       },
       starIcon: {
         marginRight: 2,
@@ -54,10 +64,12 @@ const DishCard = ({ dishData, cardColor,onCardPress }) => {
         justifyContent: 'space-between',
       },
       timeText: {
-        fontSize: 12, // Adjusted font size
+        fontSize: 12, 
+        fontFamily:'Avenir-Black'
       },
       servingsText: {
-        fontSize: 12, // Adjusted font size
+        fontSize: 12, 
+        fontFamily:'Avenir-Black'
       },
     });
   
@@ -81,18 +93,18 @@ const DishCard = ({ dishData, cardColor,onCardPress }) => {
             ))}
           </View>
           <View style={styles.timeServingsContainer}>
-            <View style ={{flexDirection:'row',alignItems:'center'}}>
-              <IconButton icon="clock-time-three" size={20}></IconButton>
-              <Text style={{fontSize:12}}>{dishData.timeToMake}</Text>
-
+            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <IconButton icon="clock-time-three" size={20}></IconButton>
+                <Text style={{fontSize: 12,marginRight:20,fontWeight:500,fontFamily:'Avenir-Black'}}>{dishData.timeToMake}</Text>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <IconButton icon="room-service" size={20} />
+                <Text style={{fontSize: 12,fontWeight:500,fontFamily:'Avenir-Black'}}>{dishData.servings}</Text>
+              </View>
             </View>
-            <View style ={{flexDirection:'row',alignItems:'center'}}>
-              <IconButton icon="room-service" size={20} />
-              <Text style={{fontSize:12}}>{dishData.servings}</Text>
-
-            </View>
-            
           </View>
+
         </View>
       </Card>
       
@@ -191,14 +203,10 @@ const ExploreScreen = () => {
             {/* Right side */}
             <View style={styles.rightContainer}>
             {/* User icon */}
-            <IconButton
-                icon="account"
-                size={40}
-                onPress={() => {
-                // Handle user icon press
-                }}
-                style={styles.userIcon}
-            />
+              <Image
+                alt=""
+                source={require('../assets/profile.png')} 
+                style={{width:40,height:40}}/>
             </View>
         </View>
 
@@ -308,11 +316,14 @@ const styles = StyleSheet.create({
   },
   bigText: {
     fontSize: 25,
-    fontWeight: 'bold',
+    fontWeight: '800',
     marginBottom: 10,
+    fontFamily:'Avenir-Black'
   },
   smallText: {
     fontSize: 15,
+    fontWeight:'300',
+    fontFamily:'Avenir-Black'
   },
   userIcon: {
     marginRight: -10, // Adjust as needed
@@ -338,18 +349,19 @@ const styles = StyleSheet.create({
 
     },
     detailsContainer: {
-        paddingTop: 45, // Adjusted based on the smaller card height
+        paddingTop: 45, 
         padding: 10,
-        height: '50%', // Adjusted based on the smaller card height
+        height: '50%', 
     },
     dishName: {
-        fontSize: 14, // Adjusted font size
-        fontWeight: 'bold',
+        fontSize: 14, 
+        fontFamily:'Avenir-Black',
+        fontWeight: '900',
         marginBottom: 5,
     },
     starsContainer: {
         flexDirection: 'row',
-        marginBottom: 5, // Adjusted based on the smaller card height
+        marginBottom: 5, 
     },
     starIcon: {
         marginRight: 2,
@@ -375,6 +387,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 24,
         textAlign: 'left',
+        fontFamily:'Avenir'
       },
       imageContainer2: {
         marginLeft: 20,
@@ -406,7 +419,7 @@ const styles = StyleSheet.create({
       capsuleImage: {
         width: 100,
         height: 100,
-        borderRadius: 10, // Adjust border radius as needed
+        borderRadius: 10, 
         marginRight: 12,
       },
       capsuleContent: {
@@ -416,6 +429,7 @@ const styles = StyleSheet.create({
       },
       capsuleText: {
         fontSize: 16,
+        fontFamily:'Avenir',
     
       },
       modalContainer: {
@@ -428,13 +442,15 @@ const styles = StyleSheet.create({
       },
       modalTitle: {
         fontSize: 24,
-        fontWeight: 'bold',
+        fontWeight: '900',
         marginBottom: 10,
+        fontFamily:'Avenir-Black'
       },
       modalSubtitle: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '900',
         marginTop: 20,
+        fontFamily:'Avenir-Black'
       },
       mealImageContainer: {
         alignItems: 'center',
@@ -460,6 +476,8 @@ const styles = StyleSheet.create({
       ingredient: {
         fontSize: 16,
         marginBottom: 10,
+        fontFamily:'Avenir-Black',
+        fontWeight:700,
       },
       stepsContainer: {
         maxHeight: 300,
@@ -467,6 +485,7 @@ const styles = StyleSheet.create({
       step: {
         fontSize: 16,
         marginBottom: 10,
+        fontFamily:'Avenir-Black'
       },
       
 

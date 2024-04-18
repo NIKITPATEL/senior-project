@@ -9,7 +9,7 @@ import { path } from './path';
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
-  const { username, userId, setUser } = useUser(); // Access context values using useUser hook
+  const { username, userId,userEmail, setUser } = useUser(); // Access context values using useUser hook
   
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const WelcomeScreen = () => {
         
         <Text style={styles.title}>Welcome, {username}</Text>
         
-        <Text tyle={styles.title}>{userId}</Text>
+        
       </View>
     
   );
