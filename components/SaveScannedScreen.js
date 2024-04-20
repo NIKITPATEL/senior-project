@@ -51,8 +51,8 @@ const SaveScannedScreen = () => {
     setModalVisible(true);
 
     try {
-      const appId = 'c958ac11'; // Replace with your Nutritionix Application ID
-      const apiKey = '7d5e826cc223699c79497f63d820cf0a'; // Replace with your Nutritionix API key
+      const appId = 'c958ac11'; 
+      const apiKey = '7d5e826cc223699c79497f63d820cf0a'; 
       const response = await axios.get(`https://trackapi.nutritionix.com/v2/search/item/?upc=${productName}`, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

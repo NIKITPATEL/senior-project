@@ -9,7 +9,7 @@ import { path } from './path';
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
-  const { username, userId,userEmail, setUser } = useUser(); // Access context values using useUser hook
+  const { username, userId,userEmail, setUser } = useUser(); 
   
 
   useEffect(() => {
@@ -34,20 +34,20 @@ const WelcomeScreen = () => {
       
             // Handle response and extract username
             const userData = response.data;
-            setUser(userData); // Set user information in context
+            setUser(userData); 
       
             setTimeout(() => {
               navigation.replace('main');
-            }, 5000); // Navigate to the main screen after 3 seconds
+            }, 5000); 
 
 
           } catch (error) {
             if (error.response && (error.response.status === 403 || error.response.status === 401)) {
               // Handle 403 or 401 error
               console.error('Error fetching user information:', error);
-              navigation.replace('login'); // Navigate to the login screen
+              navigation.replace('login'); 
             } else {
-              // Handle other errors
+              
               console.error('Error fetching user information:', error);
             }
           }
@@ -60,7 +60,7 @@ const WelcomeScreen = () => {
       
     };
 
-    // Call the function to check for the token
+    
     checkToken();
   }, [navigation]);
 
@@ -68,14 +68,14 @@ const WelcomeScreen = () => {
 
     
       <View style={styles.container} >
-        {/* Video component */}
+        
         
         <Video
-          source={require('../assets/AppLogo.mp4')} // Replace 'your-video.mp4' with the path to your MP4 video file
-          style={{ width: 400, height: 400 }} // Set the desired dimensions for the video
-          controls={false} // Show playback controls
-          //resizeMode="cover" // Adjust video size to cover its container
-          shouldPlay={true} // Start playing the video automatically
+          source={require('../assets/AppLogo.mp4')} 
+          style={{ width: 400, height: 400 }} 
+          controls={false} 
+          //resizeMode="cover" 
+          shouldPlay={true} 
           
         />
         
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color:'white',
-    fontFamily: 'Noteworthy', // Specify the font family name
+    fontFamily: 'Noteworthy', 
  
   },
 
