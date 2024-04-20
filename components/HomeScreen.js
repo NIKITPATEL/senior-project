@@ -207,13 +207,15 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius:20,
     borderBottomRightRadius:20,
     flexDirection:'row',
-    justifyContent:'space-between'
+    justifyContent:'space-between',
+    marginHorizontal:2,
   },
   nutritionCard: {
     marginBottom: 20,
     backgroundColor: 'skyblue',
     padding: 20,
     borderRadius: 20,
+    marginHorizontal:2,
   },
   circleChart: {
     flexDirection: 'row',
@@ -253,6 +255,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+    
   },
   scrollView: {
     maxHeight: 100, // Set a maximum height for the ScrollView
