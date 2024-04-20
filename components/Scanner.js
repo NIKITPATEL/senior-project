@@ -384,7 +384,7 @@ export default function Scanner () {
                         return false; // Product contains gluten
                     }
                 }
-                // If neither "gluten-free" nor gluten-containing ingredients are found, assume it's gluten-free
+                
                 return true;
               };
 
@@ -422,9 +422,9 @@ export default function Scanner () {
                 const lowercaseIngredientStatement = ingredientStatement.toLowerCase();
                 // Check if the ingredient statement explicitly mentions "organic"
                 if (lowercaseIngredientStatement.includes('organic')) {
-                    return true; // Product is labeled as organic
+                    return true; 
                 }
-                return false; // Product is not labeled as organic
+                return false; 
             };
             
 
@@ -509,8 +509,7 @@ export default function Scanner () {
                     const normalizedAllergy = allergy.toLowerCase();
                     // Check if the ingredient contains the allergy (case insensitive)
                     const containsAllergy = normalizedIngredient.includes(normalizedAllergy);
-                    //console.log(`Checking ingredient "${normalizedIngredient}" for allergy "${normalizedAllergy}": ${containsAllergy}`);
-                    // If a matching allergy is found and it's not already in the array, add it to the array
+                    
                     if (containsAllergy) {
                       console.log('Found allergy:', allergy);
                       
