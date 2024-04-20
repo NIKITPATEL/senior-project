@@ -115,7 +115,7 @@ const DishCard = ({ dishData, cardColor,onCardPress }) => {
 const ExploreScreen = () => {
   const {userId,username} = useUser();
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedDish, setSelectedDish] = useState(null); // Store the selected dish data
+  const [selectedDish, setSelectedDish] = useState(null); 
 
   const onCardPress = (dishData) => {
     setSelectedDish(dishData);
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     fontFamily:'Avenir-Black'
   },
   userIcon: {
-    marginRight: -10, // Adjust as needed
+    marginRight: -10, 
   },
   cardContainer: {
     flexDirection: 'row',

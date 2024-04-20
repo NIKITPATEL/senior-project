@@ -26,7 +26,7 @@ const NutrientCalculator = () => {
       useNativeDriver: true,
     }).start();
     try {
-        // Prepare the meal data
+        
         const mealData = {
           userId: userId, 
           calories: calories,
@@ -39,7 +39,7 @@ const NutrientCalculator = () => {
         // Send a POST request to add the meal to the database
         const response = await axios.post(path + '/add-meal', mealData);
     
-        // Handle the response if needed
+        
         console.log('Meal added:', response.data);
         Alert.alert('Meal added');
       } catch (error) {

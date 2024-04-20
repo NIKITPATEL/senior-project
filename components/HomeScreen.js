@@ -59,7 +59,7 @@ const HomeScreen = (props) => {
     <SafeAreaView style={styles.container}>
       
       <View style={styles.welcomeCard}>
-        {/* Profile icon and text on the left */}
+        
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image
             source={require('../assets/profile.png')} 
@@ -67,7 +67,7 @@ const HomeScreen = (props) => {
           />
           <Text style={{ fontSize: 20, fontWeight: '800',fontFamily:'Avenir-Black' }}>Welcome, {username}</Text>
         </View>
-        {/* Notification icon on the right corner */}
+        
         <IconButton
           icon="bell"
           size={30}
@@ -81,9 +81,9 @@ const HomeScreen = (props) => {
 
       {/* Nutrition Summary Card */}
         <View style={styles.nutritionCard}>
-          {/* Add nutrition summary components here */}
+          
           <View style={styles.circleChart}>
-          {/* Animated view */}
+          
           <Animated.View style={[styles.chartContainer, { opacity: animatedOpacity }]}>
             <PieChart
               style={styles.pieChart}
@@ -143,7 +143,7 @@ const HomeScreen = (props) => {
                 <Text style={styles.cardText}>Items</Text>
                 
                 <Text style={styles.cardText2}>Saved Items</Text>
-                {/* Progress bar */}
+                
                 <View style={styles.progressBarContainer}>
                     <ProgressBar
                         progress={0.3}

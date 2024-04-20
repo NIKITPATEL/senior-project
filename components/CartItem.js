@@ -21,15 +21,15 @@ const CartItem = ({ image, productName,onPress }) => {
   return (
     
         <View style={styles.container}>
-            {/* Product image */}
+            
             <View style={styles.imageContainer}>
               {image && <Image source={{ uri: image }} style={styles.image} />}
             </View>
 
-            {/* Product name */}
+            
             <Text style={styles.productName}>{productName}</Text>
 
-            {/* Action buttons */}
+            
             <View style={styles.actionButtons}>
             <IconButton
               icon="heart"
@@ -39,7 +39,7 @@ const CartItem = ({ image, productName,onPress }) => {
             />
     
 
-              {/* Cart icon */}
+              
               <IconButton 
               icon="cart" 
               size={20} 
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000', 
     shadowOpacity: 0.2, 
     shadowRadius: 5, 
-    shadowOffset: { width: 0, height: 2 }, // Shadow offset
+    shadowOffset: { width: 0, height: 2 },  
     elevation: 3, 
   },
   imageContainer: {
@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
     
     flexDirection: 'row',
     justifyContent:'space-between',
-    //marginTop: 5,
-    paddingHorizontal: 10, // Add horizontal padding
+    
+    paddingHorizontal: 10, 
     
     
   },

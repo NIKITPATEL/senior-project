@@ -22,7 +22,7 @@ const SaveScannedScreen = () => {
     try {
       // Send a DELETE request to the backend to delete the item with the specified barcodeId
       await axios.delete(path+`/deletefood/${barcodeid}`);
-      // After successful deletion, fetch scanned foods again to update the UI
+      // After deletion, fetch scanned foods again to update the front
       fetchScannedFoods();
     } catch (error) {
       console.error('Error deleting item:', error);
@@ -34,7 +34,7 @@ const SaveScannedScreen = () => {
       try {
         // Fetch scanned foods using Axios
         const response = await axios.get(path + `/savefood/${userId}`);
-        console.log('Response from backend:', response.data); // Log the response data
+        console.log('Response from backend:', response.data); 
         setProductNames(response.data.scannedFoods);
         console.log(productNames)
       } catch (error) {

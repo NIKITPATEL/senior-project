@@ -833,7 +833,7 @@ export default function Scanner () {
                 />
               </View>
               <View style={styles.space} />
-              {/* Add more Video components as needed */}
+              
             </View>
             {/* Rest of your components */}
 
@@ -850,12 +850,12 @@ export default function Scanner () {
                 <View style={styles.modalView}>
                   <ScrollView>
                     <View style={styles.productContainer}>
-                      {/* Image */}
+                      
                       <Image style={styles.modalImage} source={{ uri: scanPhoto}} />
 
-                      {/* Product details */}
+                     
                       <View style={styles.productDetails}>
-                        {/* Product name */}
+                        
                         <Text style={{color:'white',fontWeight:'900',fontSize:24,marginBottom:25, fontFamily:'Avenir-Black'}}>{brandName}</Text>
 
                         <View style={{flexDirection: 'row', alignItems: 'center' }}>
@@ -868,7 +868,7 @@ export default function Scanner () {
                       
                         
                         
-                            {/* Save icon */}
+                            
                         <View style={{flexDirection:'row'}}>
                             <IconButton iconColor='white' icon="bookmark" size={24} onPress={saveScannedProduct} style={{marginRight:25}} />
                             <IconButton iconColor='white' icon="food" size={24} onPress={handleAddMeal} style={{marginLeft:25}}/>
@@ -877,7 +877,7 @@ export default function Scanner () {
                       </View>
                     </View>
                     
-                    {/* Other product details */}
+                    
                     <Divider style={{marginVertical:10,height:2}}/>
                     
 
@@ -957,7 +957,7 @@ export default function Scanner () {
                     </View>
 
 
-                    {/* Ingredients */}
+                    
                     <TouchableOpacity onPress={toggleIngredients} style={styles.ingredientsContainer}>
                       <Text style={styles.ingredientsTitle}>Ingredients</Text>
                       <IconButton
@@ -970,7 +970,7 @@ export default function Scanner () {
                     {/* Expanded ingredients */}
                     {showIngredients && (
                       <View style={styles.expandedIngredients}>
-                        {/* Render the list of ingredients here */}
+                        
                         <Text style={{fontWeight:'400',fontFamily:'Avenir-Black'}}>{ingredient}</Text>
                         
                       </View>
@@ -1009,7 +1009,7 @@ export default function Scanner () {
                           </TouchableOpacity>
                           {isAllergiesExpanded && (
                             <View style={styles.expandedContent}>
-                              {/* Content for Allergies */}
+                              
                               <Text style={{fontWeight:'300',fontFamily:'Avenir-Black'}}>{displayAllergy}</Text>
                             </View>
                           )}
@@ -1029,18 +1029,18 @@ export default function Scanner () {
                         keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
                         renderItem={({ item }) => (
                             <TouchableOpacity style={styles.cardContainer}>
-                                {/* Render your card here */}
+                                
                                 <View style={styles.card}>
-                                    {/* Product image */}
+                                    
                                     <Image source={item.photo ? { uri: item.photo } : require('../assets/food.png')} style={styles.productImage} />
 
 
-                                    {/* Calories capsule */}
+                                    
                                     <View style={styles.caloriesCapsule}>
                                         <Text style={styles.caloriesText}>{item.calories} cal</Text>
                                     </View> 
 
-                                    {/* Product name */}
+                                    
                                     <View style={styles.productNameContainer}>
                                         <Text style={styles.productName}>{item.name}</Text>
                                     </View>
@@ -1053,7 +1053,7 @@ export default function Scanner () {
 
                     
                     
-                    {/* Close modal button */}
+                    
                     
                     <Pressable style={[styles.button, styles.buttonClose]} onPress={() => handle_closemodal()}>
                       <Text style={styles.textStyle}>Close Modal</Text>

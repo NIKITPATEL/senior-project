@@ -35,7 +35,7 @@ const RecipeScreen = () => {
     setModalVisible(true);
 
     try {
-      // Make an HTTP request to fetch recipe details
+      
       const response = await axios.get('https://api.edamam.com/search', {
         params: {
           r: recipe.recipe.uri, // Pass the URI of the selected recipe
@@ -44,7 +44,7 @@ const RecipeScreen = () => {
         },
       });
 
-      // Extract recipe details from the response and set it in state
+      
       setRecipeDetails(response.data[0]);
       console.log(recipeDetails);
     } catch (error) {
@@ -52,13 +52,13 @@ const RecipeScreen = () => {
     }
   }
 
-  // Define fade-in and fade-out animations
+  // fade-in and fade-out animations
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 1000, // Adjust the duration as needed
+      duration: 1000, 
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
@@ -78,15 +78,15 @@ const RecipeScreen = () => {
             style={[
               styles.animeContainer,
               {
-                opacity: fadeAnim, // Apply fade-in and fade-out effect
-                shadowColor: '#000', // Shadow color
+                opacity: fadeAnim, 
+                shadowColor: '#000', 
                 shadowOffset: {
                   width: 0,
                   height: 2,
                 },
-                shadowOpacity: 0.25, // Shadow opacity
-                shadowRadius: 3.84, // Shadow radius
-                elevation: 5, // Android elevation
+                shadowOpacity: 0.25, 
+                shadowRadius: 3.84, 
+                
               },
             ]}
           >
@@ -104,7 +104,7 @@ const RecipeScreen = () => {
             <Image source={require('../assets/magic-wand.png')} style={{ width: 30, height: 30, marginTop: 10, alignSelf: 'center' }} />
           </TouchableOpacity>
 
-          {/* Recipe cards */}
+          
           <ScrollView style={styles.recipeContainer}>
             {recipes.map((recipe, index) => (
               <TouchableOpacity key={index} style={styles.recipeCard} onPress={() => handleRecipeClick(recipe)}>
@@ -121,14 +121,14 @@ const RecipeScreen = () => {
           >
             {recipeDetails && (
               <View style={styles.modalContainer}>
-                {/* Close button */}
+                
                 <IconButton
                   icon="close"
                   size={30}
                   onPress={() => setModalVisible(false)}
                   style={styles.closeButton}
                 />
-                {/* Dish name and meal image */}
+                
                 <View style={styles.mealImageContainer}>
                   <Text style={styles.modalTitle}>{recipeDetails?.label}</Text>
                   <Image source={{ uri: recipeDetails?.image }} style={styles.mealImage} />
