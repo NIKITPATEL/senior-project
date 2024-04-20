@@ -16,7 +16,7 @@ import { Video, } from 'expo-av';
 import Typewriter from './Typewriter';
 
 const { width } = Dimensions.get('window');
-const SCALE = width / 375; // Adjust the base width (375) as needed
+const SCALE = width / 375; 
 
 
 
@@ -496,7 +496,7 @@ export default function Scanner () {
 
 
 
-              // Split the string into an array of ingredients using commas as the separator
+              
               const ingredientsArray = ingredients.toLowerCase().split(',').map(item => item.trim());    
               
               const lowercaseAllergyPreferences = allergyPreferences.map(preference => preference.toLowerCase());
@@ -513,11 +513,11 @@ export default function Scanner () {
                     // If a matching allergy is found and it's not already in the array, add it to the array
                     if (containsAllergy) {
                       console.log('Found allergy:', allergy);
-                      // Add the found allergy to the set if it doesn't already exist
+                      
                       setUnmatchedAllergy(prevState => {
-                          // Create a new Set with the previous state
+                          
                           const newState = new Set(prevState);
-                          // Add the new allergy to the set if it's not already present
+                          
                           if (!newState.has(allergy)) {
                               newState.add(allergy);
                           }
@@ -534,7 +534,7 @@ export default function Scanner () {
 
         
         
-              // Perform any action you want here with the user preferences contained in the ingredient
+              
 
                 const foodName = product.food_name
 
@@ -546,16 +546,16 @@ export default function Scanner () {
                   },
                 });
 
-                // Extract food names from the response and update the state
+               
                 if (response_2.data && response_2.data.branded && response_2.data.common) {
                   const brandedItems = response_2.data.branded.map(item => ({
                     name: item.food_name,
-                    photo: item.photo && item.photo.thumb, // Check if photo exists before accessing
+                    photo: item.photo && item.photo.thumb, 
                     calories:item.nf_calories
                   }));
                   const commonItems = response_2.data.common.map(item => ({
                     name: item.food_name,
-                    photo: item.photo && item.photo.thumb, // Check if photo exists before accessing
+                    photo: item.photo && item.photo.thumb,  
                     calories:item.nf_calories
                   }));
                   setCartItems([...brandedItems, ...commonItems]);
@@ -578,20 +578,20 @@ export default function Scanner () {
 
           const handleAddMeal = async () => {
             try {
-              // Prepare the meal data
+              
               const mealData = {
-                userId: userId, // Assuming you have the user ID available
+                userId: userId, 
                 calories: calories,
                 protein: protein,
                 carbs: carbs,
                 fats: fat,
-                sugar: sugar, // Add sugar value if available
+                sugar: sugar, 
               };
           
-              // Send a POST request to add the meal to the database
+              
               const response = await axios.post(path + '/add-meal', mealData);
           
-              // Handle the response if needed
+             
               console.log('Meal added:', response.data);
               Alert.alert('Meal added');
             } catch (error) {
@@ -635,7 +635,7 @@ export default function Scanner () {
     };
     
 
-      // Check permissions and return the screens
+      
       if (hasPermission === null) {
           return (
           <View style={styles.container}>
@@ -659,11 +659,11 @@ export default function Scanner () {
             max: nutrient.nutrient_max
           }));
           console.log('user nutrients:' ,userNutrients);
-          return userNutrients; // Return the formatted user nutrients data
+          return userNutrients; 
           
         } catch (error) {
           console.error('Error fetching user nutrients:', error);
-          return null; // Return null in case of an error
+          return null; 
         }
       };
 
@@ -717,7 +717,7 @@ export default function Scanner () {
               }
               break;
 
-            // Add cases for other nutrients as needed
+           
             default:
               break;
           }
@@ -1095,7 +1095,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 20, 
     backgroundColor: '#fff', 
-    shadowColor: '#000', // Shadow color
+    shadowColor: '#000', 
     shadowOffset: {
       width: 0,
       height: 2,
@@ -1115,7 +1115,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: 2, // Adjust the width of the line
+    width: 2,  
     height: '100%',
     backgroundColor: 'white', 
   },
@@ -1144,7 +1144,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    width: '100%', // Make the modal cover the entire screen
+    width: '100%',  
     
   },
   productContainer: {
@@ -1206,7 +1206,7 @@ const styles = StyleSheet.create({
     borderRadius:20,
   },
   space: {
-    width: 10, // Adjust space width as needed
+    width: 10,  
   },
   modalText: {
     marginTop: 10 * SCALE, 
@@ -1307,7 +1307,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    //paddingVertical: 10,
+    
     backgroundColor: '#f0f0f0',
     borderRadius: 30,
     marginTop: 10,
@@ -1377,25 +1377,25 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.10,
       shadowRadius: 3.84,
       elevation: 5,
-      // Add your card styles here
+      
   },
   productImage: {
       width: '100%',
       height: '100%',
       resizeMode: 'cover',
-      // Add your product image styles here
+      
   },
   caloriesCapsule: {
       position: 'absolute',
       top: 5,
       left: 5,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Example background color
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
       borderRadius: 10,
       padding: 5,
-      // Add your calories capsule styles here
+      
   },
   caloriesText: {
-      color: '#fff', // Example text color
+      color: '#fff',  
       fontSize: 12,
       fontFamily:'Avenir-Black'
   },
