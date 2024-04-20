@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, SafeAreaView,Text,TouchableOpacity,Image } from 'react-native';
 import { Searchbar,Icon } from 'react-native-paper';
-import CartItem from './CartItem'; // Import the CartItem component
+import CartItem from './CartItem'; 
 import axios from 'axios';
 
 const CartScreen = () => {
@@ -9,7 +9,7 @@ const CartScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Function to handle search query
+  
   const handleSearch = async (searchQuery) => {
     try {
       const response = await axios.get(`https://trackapi.nutritionix.com/v2/search/instant/?query=${searchQuery}`, {
@@ -20,15 +20,15 @@ const CartScreen = () => {
         },
       });
 
-      // Extract food items from the response and update the state
+      
       if (response.data && response.data.branded && response.data.common) {
         const brandedItems = response.data.branded.map(item => ({
           name: item.food_name,
-          photo: item.photo && item.photo.thumb // Check if photo exists before accessing
+          photo: item.photo && item.photo.thumb 
         }));
         const commonItems = response.data.common.map(item => ({
           name: item.food_name,
-          photo: item.photo && item.photo.thumb // Check if photo exists before accessing
+          photo: item.photo && item.photo.thumb 
         }));
         setCartItems([...brandedItems, ...commonItems]);
       } else {
@@ -50,18 +50,18 @@ const CartScreen = () => {
   
   
 
-  // Fetch food items on component mount
+  
   useEffect(() => {
-    const randomTerms = ['breakfast', 'lunch', 'dinner', 'snack']; // Example of random terms
+    const randomTerms = ['breakfast', 'lunch', 'dinner', 'snack']; 
     const randomIndex = Math.floor(Math.random() * randomTerms.length);
     const randomQuery = randomTerms[randomIndex];
-    handleSearch(randomQuery); // Fetch default items on mount
+    handleSearch(randomQuery); 
   }, []);
 
   return (
     <SafeAreaView>
       <View>
-        {/* Searchbar */}
+        
         <Searchbar
           placeholder="Search"
           onChangeText={setSearchQuery}
@@ -129,9 +129,9 @@ const CartScreen = () => {
             
         </ScrollView>
 
-        {/* Cart items */}
+        
         <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={false}>
-          {/* Render CartItem components dynamically based on products array */}
+          
           
           {cartItems.map((item, index) => (
             <CartItem key={index} image={item.photo} productName={item.name}/>
@@ -146,13 +146,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    paddingHorizontal: 10, // Add horizontal padding
-    paddingTop: 20, // Add top padding
+    paddingHorizontal: 10, 
+    paddingTop: 20,
     
   },
   scrollContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap', // Allow multiple rows of cards
+    flexWrap: 'wrap', 
     justifyContent: 'space-between', 
     margin:5,
   },

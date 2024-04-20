@@ -13,13 +13,13 @@ const Allergy = () => {
     const [selectedAllergies, setSelectedAllergies] = useState([]);
 
     useEffect(() => {
-        // Fetch user's existing allergies from the backend
+        
         const fetchUserAllergies = async () => {
             try {
                 const response = await axios.get(path + `/userallergies/${userId}`);
                 const userAllergies = response.data;
                 
-                // Merge the fetched allergies with the selected ones
+                
                 const mergedAllergies = Array.from(new Set([...selectedAllergies, ...userAllergies]));
                 setSelectedAllergies(mergedAllergies);
             } catch (error) {
@@ -30,7 +30,7 @@ const Allergy = () => {
     }, [userId]);
     
     useEffect(() => {
-        // Fetch user's existing allergies from the backend
+        
         const fetchUserAllergies = async () => {
             try {
                 const response = await axios.get(path + `/userallergies/${userId}`);
@@ -63,11 +63,11 @@ const Allergy = () => {
             console.log('User Allergies:', userAllergies);
             console.log('Selected Allergies:', selectedAllergies);
             
-            // Filter out deselected allergies
+            
             const deselectedAllergies = userAllergies.filter(allergy => !selectedAllergies.includes(allergy));
             console.log('Deselected Allergies:', deselectedAllergies);
             
-            // Send both selected and deselected allergies to backend
+            
             await axios.post(path + '/user/allergies', {
                 userId: userId,
                 selected: selectedAllergies,
@@ -85,7 +85,7 @@ const Allergy = () => {
 
 
 
-    // Initialize state to track allergen tolerance levels
+    
 
     const allergy = [
         { name: 'Eggs', icon: 'egg' },
@@ -101,7 +101,7 @@ const Allergy = () => {
               { name: 'Peanuts', icon: 'almonds' },
               { name: 'Almonds', icon: 'almonds' },
               { name: 'Walnuts', icon: 'walnuts' },
-              // Add more nut options as needed
+              
           ]
         },
         { name:'Sellfish',icon:'corn',
@@ -185,10 +185,10 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     listItem: {
-        backgroundColor: 'white', // Default background color
+        backgroundColor: 'white', 
     },
     selectedItem: {
-        backgroundColor: 'rgba(0, 0, 0, 0.1)', // Selected item background shadow
+        backgroundColor: 'rgba(0, 0, 0, 0.1)', 
     },
     scroll:{
       height:'73%',

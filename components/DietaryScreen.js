@@ -20,7 +20,7 @@ export default function DietaryScreen() {
   const fetchUserAllergies = async () => {
     try {
       const response = await axios.get(path+`/userpreferences/${userId}`);
-      setUserAllergies(response.data); // Assuming the response contains an array of allergies
+      setUserAllergies(response.data); 
     } catch (error) {
       console.error('Error fetching user allergies:', error);
     }
@@ -39,7 +39,7 @@ const handleAllergy = (name) => {
   } else {
     // If the allergy is not selected, select it and apply green border
     setSelectedAvatars([...selectedAvatars, name]);
-    // Apply green border for selected allergies
+    
     setUserAllergies([...userAllergies, name]);
   }
 };
@@ -72,7 +72,7 @@ const handleAllergy = (name) => {
     try {
       // Save selected and deselected allergies to the database
      // console.log('Selected:', selectedAvatars);
-    //console.log('Deselected:', dietary.filter(({ name }) => !selectedAvatars.includes(name)).map(({ name }) => name));
+    
       await axios.post(path + '/user/preferences', {
         userId,
         selected: selectedAvatars,
@@ -107,7 +107,7 @@ const handleAllergy = (name) => {
                 style={[
                   styles.avatarContainer,
                   selectedAvatars.includes(name) && styles.selectedAvatar,
-                  userAllergies.includes(name) && styles.allergyAvatar, // Apply red border for existing allergies
+                  userAllergies.includes(name) && styles.allergyAvatar, 
                   
                 ]}
               >
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     borderColor: 'red',
   },
   allergyAvatar: {
-    borderColor: 'red', // Apply red border for existing allergies
+    borderColor: 'red', 
   },
   nameContainer: {
     marginTop: 5,

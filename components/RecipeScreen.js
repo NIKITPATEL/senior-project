@@ -14,7 +14,7 @@ const RecipeScreen = () => {
 
   const searchRecipes = async () => {
     try {
-      // Make an HTTP request to the Edamam recipe API endpoint with user-input ingredients
+      
       const response = await axios.get('https://api.edamam.com/search', {
         params: {
           q: ingredients,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     
   },
   animeContainer: {
-    backgroundColor: '#c1e3b6', // Background color
+    backgroundColor: '#c1e3b6', 
     borderRadius: 20, 
     padding: 10,
     margin: 10,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    elevation: 3, // for Android
+    elevation: 3, 
   },
   recipeContainer: {
     marginTop: 20,

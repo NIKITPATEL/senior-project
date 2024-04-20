@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     width: '45%', 
     
     elevation: 5,
-    // Shadow properties for iOS
+    
     shadowColor: '#000000',
     shadowOffset: {
       width: 0,

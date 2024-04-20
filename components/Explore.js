@@ -200,9 +200,9 @@ const ExploreScreen = () => {
 
             
 
-            {/* Right side */}
+            
             <View style={styles.rightContainer}>
-            {/* User icon */}
+            
               <Image
                 alt=""
                 source={require('../assets/profile.png')} 

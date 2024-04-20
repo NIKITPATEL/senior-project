@@ -40,12 +40,12 @@ const HomeScreen = (props) => {
   const startAnimation = () => {
     Animated.timing(animatedOpacity, {
       toValue: 1,
-      duration: 1000, // Adjust duration as needed
+      duration: 1000, 
       useNativeDriver: true,
     }).start();
   };
 
-  // Call startAnimation when component mounts
+  
   useEffect(() => {
     startAnimation();
   }, []);
@@ -62,8 +62,8 @@ const HomeScreen = (props) => {
         {/* Profile icon and text on the left */}
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image
-            source={require('../assets/profile.png')} // Replace with the path to your image
-            style={{ width: 40, height: 40 ,marginHorizontal:20,marginBottom:20,marginTop:15}} // Adjust width and height as needed
+            source={require('../assets/profile.png')} 
+            style={{ width: 40, height: 40 ,marginHorizontal:20,marginBottom:20,marginTop:15}} 
           />
           <Text style={{ fontSize: 20, fontWeight: '800',fontFamily:'Avenir-Black' }}>Welcome, {username}</Text>
         </View>
@@ -72,7 +72,7 @@ const HomeScreen = (props) => {
           icon="bell"
           size={30}
           onPress={() => {
-            // Handle notification icon press
+            
           }}
           style={{ position: 'absolute', top: 10, right: 10 }}
         />
@@ -109,9 +109,9 @@ const HomeScreen = (props) => {
       {/* Circle Chart */}
       
 
-      {/* Additional Container */}
+      
       <View style={styles.container_2}>
-        {/* Add additional components here */}
+        
         <ScrollView>
         
             
@@ -168,7 +168,7 @@ const HomeScreen = (props) => {
                 </View>
                 <Text style={styles.cardText}>Meals</Text>
                 <Text style={styles.cardText2}>Saved Meals</Text>
-                {/* Progress bar */}
+                
                 <View style={styles.progressBarContainer}>
                   <ProgressBar
                     progress={0.8}
@@ -183,7 +183,7 @@ const HomeScreen = (props) => {
               </View>
             
         </View>
-  {/* Add more pairs of cards as needed */}
+  
 
         </ScrollView>
 
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chartContainer: {
-    marginRight: 20, // Add spacing
+    marginRight: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -232,16 +232,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    borderRadius: 10, // Add border radius
+    borderRadius: 10,
   },
   pieChart: {
-    borderRadius: 10, // Add border radius
+    borderRadius: 10,
   },
   nutrientLabels: {
     justifyContent: 'center',
   },
   labelsTitle: {
-    marginBottom: 10, // Add spacing
+    marginBottom: 10,
     fontWeight: '900',
     fontSize:18,
     fontFamily:'Avenir-Black'
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     
   },
   scrollView: {
-    maxHeight: 100, // Set a maximum height for the ScrollView
+    maxHeight: 100, 
   },
   iconContainer: {
     alignItems: 'center',
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   cardText: {
     top: 60,
     left: 15,
-    marginLeft: 5, // Adjust spacing between icon and text
+    marginLeft: 5,
     color: '#030303',
     fontSize: 12,
     fontFamily:'Avenir-Black',
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   cardText2: {
     top: 70,
     left: 15,
-    marginLeft: 5, // Adjust spacing between icon and text
+    marginLeft: 5,
     color: '#030303',
     fontSize: 16,
     fontFamily:'Avenir-Black',
@@ -344,13 +344,13 @@ const styles = StyleSheet.create({
   iconWrapper: {
     borderWidth: 2,
     borderColor: 'red',
-    borderRadius: 50, // Adjust as needed
+    borderRadius: 50,
     padding: 10,
     shadowColor: 'red',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
-    elevation: 5, // For Android shadow
+    elevation: 5, 
     alignSelf:'center'
   },
 

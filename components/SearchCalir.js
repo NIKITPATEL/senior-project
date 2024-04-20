@@ -48,20 +48,20 @@ const SearchCali = () => {
 
   const handleAddMeal = async (item) => {
     try {
-      // Prepare the meal data
+      
       const mealData = {
-        userId: userId, // Assuming you have the user ID available
+        userId: userId, 
         calories: item.nf_calories || item.nf_calories_estimated || 0,
         protein: item.nf_protein || item.nf_protein_estimated || 0,
         carbs: item.nf_total_carbohydrate || item.nf_total_carbohydrate_estimated || 0,
         fats: item.nf_total_fat || item.nf_total_fat_estimated || 0,
-        sugar: item.nf_sugars || item.nf_sugars_estimated || 0, // Add sugar value if available
+        sugar: item.nf_sugars || item.nf_sugars_estimated || 0, 
       };
   
-      // Send a POST request to add the meal to the database
+      
       const response = await axios.post(path + '/add-meal', mealData);
   
-      // Handle the response if needed
+      
       console.log('Meal added:', response.data);
       Alert.alert('Meal added');
     } catch (error) {
@@ -70,20 +70,20 @@ const SearchCali = () => {
   };
   const handleAddMeal2 = async (item) => {
     try {
-      // Prepare the meal data
+      
       const mealData = {
-        userId: userId, // Assuming you have the user ID available
+        userId: userId, 
         calories: item.nutriments?.energy_value || 0,
         protein: item.nutriments?.proteins || 0,
         carbs: item.nutriments?.carbohydrates || 0,
         fats: item.nutriments?.fat || 0,
-        sugar: item.nutriments?.sugars || 0, // Add sugar value if available
+        sugar: item.nutriments?.sugars || 0, 
       };
   
-      // Send a POST request to add the meal to the database
+      
       const response = await axios.post(path + '/add-meal', mealData);
   
-      // Handle the response if needed
+      
       console.log('Meal added:', response.data);
       Alert.alert('Meal added');
     } catch (error) {
@@ -91,7 +91,7 @@ const SearchCali = () => {
     }
   };
   
-  // Function to handle clear button press
+  
   const handleClear = () => {
     setSearchResults([]);
     setSearchResults2([]);
@@ -108,29 +108,29 @@ const SearchCali = () => {
       
 
       <View style={{flexDirection:'row',alignItems:'center',marginBottom:10}}>
-        {/* Search input */}
+        
         <TextInput
           style={styles.input}
           placeholder="Enter ingredients..."
           value={query}
           onChangeText={setQuery}
         />
-        {/* Search button */}
+        
         <IconButton icon="magnify" size={25} onPress={handleSearch} style={{backgroundColor: '#c1e3b6',borderRadius: 20,padding: 10,}} />
-        {/* Scan button */}
+        
         <IconButton icon="barcode-scan" size={30} onPress={() => navigation.navigate('scanner')} />
       </View>
       <View style={{flexDirection:'row',alignItems:'center',marginBottom:10}}>
-        {/* Search input */}
+        
           <TextInput
             style={styles.input}
             placeholder="Use Natural Language..."
             value={query_2}
             onChangeText={setQuery_2}
           />
-          {/* Search button */}
+          
           <IconButton icon="silverware-clean" size={25} onPress={handleSearch_2} style={{borderRadius: 50,backgroundColor: '#d2c3d7', shadowColor: '#d2c3d7',  shadowRadius: 4,elevation: 5, }}/>
-          {/* Scan button */}
+          
         
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
