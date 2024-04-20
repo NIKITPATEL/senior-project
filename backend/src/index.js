@@ -43,7 +43,7 @@ const authenticateToken = (req, res, next) => {
 // Route to fetch user information based on the JWT token
 app.get('/user', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.userId; // Extract userId from the token payload
+    const userId = req.user.userId; 
 
     // Fetch user information from the database based on userId
     const userInfo = await pool.query('SELECT * FROM users WHERE userid = $1', [userId]);
@@ -58,7 +58,7 @@ app.get('/user', authenticateToken, async (req, res) => {
     
     res.json({ userId:userId,username: username,userEmail:userEmail });
   } catch (error) {
-    console.error('Error fetching user information:', error);
+    
     res.sendStatus(500); 
   }
 });
@@ -70,6 +70,7 @@ app.get('/savefood/:userId', async (req, res) => {
     console.log('Fetching scanned foods for user ID:', userId);
 
     // Query the database to fetch barcode IDs, product names, and photo IDs for the provided user ID
+    
     const result = await pool.query(`
     SELECT barcodeid, productname, photoid
     FROM ScannedFoods
@@ -79,10 +80,10 @@ app.get('/savefood/:userId', async (req, res) => {
 
     console.log('Scanned foods retrieved successfully:', result.rows);
 
-    // Send the data as a JSON response
+    // Send the response to get the saved food
     res.json({ scannedFoods: result.rows });
   } catch (error) {
-    console.error('Error retrieving scanned foods:', error);
+    
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -104,7 +105,7 @@ app.get('/userpreferences/:userId', async (req, res) => {
     console.log(preferences)
     res.status(200).json(preferences);
   } catch (error) {
-    console.error('Error fetching preferences:', error);
+    
     res.status(500).json({ message: 'Error fetching preferences.' });
   }
 });
@@ -133,7 +134,7 @@ app.get('/total-nutrients/:userId', async (req, res) => {
     const userId = parseInt(req.params.userId);
     const currentDate = new Date().toISOString().split('T')[0]; 
 
-    //  to calculate total nutritional values for the user and current date
+    // To calculate total nutritional values for the user and current date
     const result = await pool.query('SELECT SUM(calories) AS totalCalories, SUM(protein) AS totalProtein, SUM(carbs) AS totalCarbs, SUM(fats) AS totalFats FROM nutrients WHERE UserID = $1 AND meal_date = $2', [userId, currentDate]);
 
     // Extract the total nutritional values from the result
@@ -156,7 +157,7 @@ app.get('/user-nutrients/:userId', async (req, res) => {
 
     res.json(rows);
   } catch (error) {
-    console.error('Error fetching user nutrients:', error);
+    
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -382,7 +383,7 @@ app.post('/user-nutrients', async (req, res) => {
       res.status(201).json({ message: 'User nutrient added successfully' });
     }
   } catch (error) {
-    console.error('Error adding/updating user nutrient:', error);
+    
     res.status(500).json({ error: 'Internal server error' });
   }
 });
