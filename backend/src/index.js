@@ -7,7 +7,9 @@ const bcrypt = require('bcrypt');
 
 
 app.use(cors())
-app.use(express.json()); // allows us to access the req.body
+// allows  to access the req.body
+
+app.use(express.json()); 
 
 
 //ROUTES
@@ -26,12 +28,12 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
   
   if (!token) {
-    return res.sendStatus(401); // Unauthorized if token is missing
+    return res.sendStatus(401); 
   }
 
   jwt.verify(token, 'i_got', (err, user) => {
     if (err) {
-      return res.sendStatus(403); // Forbidden if token is invalid
+      return res.sendStatus(403); 
     }
     req.user = user;
     next();
@@ -57,7 +59,7 @@ app.get('/user', authenticateToken, async (req, res) => {
     res.json({ userId:userId,username: username,userEmail:userEmail });
   } catch (error) {
     console.error('Error fetching user information:', error);
-    res.sendStatus(500); // Internal server error
+    res.sendStatus(500); 
   }
 });
 
@@ -129,9 +131,9 @@ app.get('/userallergies/:userId', async (req, res) => {
 app.get('/total-nutrients/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0]; 
 
-    // Query the database to calculate total nutritional values for the user and current date
+    //  to calculate total nutritional values for the user and current date
     const result = await pool.query('SELECT SUM(calories) AS totalCalories, SUM(protein) AS totalProtein, SUM(carbs) AS totalCarbs, SUM(fats) AS totalFats FROM nutrients WHERE UserID = $1 AND meal_date = $2', [userId, currentDate]);
 
     // Extract the total nutritional values from the result
@@ -216,7 +218,7 @@ app.post('/login', async (req, res) => {
     }
 
     // Authentication successful, generate JWT token and send it to the client
-    const userId = user.rows[0].userid; // Assuming user ID is stored in 'userid' column
+    const userId = user.rows[0].userid; 
     const token = jwt.sign({ userId: userId }, 'i_got', { noTimestamp: true, expiresIn: '1h' });
 
     // Fetch the user record from the database based on userId
@@ -255,7 +257,7 @@ app.post('/save_scanned', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Product already saved' });
     }
 
-    // Here, you'll need to execute an INSERT query to insert the scanned data into your table.
+    
     const result = await pool.query(
       'INSERT INTO SCANNEDFOODS (UserID, ProductID, ScanTime, BarcodeID, ProductName, PhotoID) VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4, $5) RETURNING *',
       [userId, productId, barcodeId, productName, photoId]
@@ -263,7 +265,7 @@ app.post('/save_scanned', async (req, res) => {
 
     console.log('Data inserted successfully:', result.rows[0]);
 
-    // Send a JSON response indicating success
+    
     res.status(201).json({ success: true, data: result.rows[0] });
   } catch (error) {
     console.error('Error saving scanned food:', error);

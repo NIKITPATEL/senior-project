@@ -284,8 +284,8 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#ddd', // Light border color
-    shadowColor: '#000', // Shadow color
+    borderColor: '#ddd', 
+    shadowColor: '#000', 
     shadowOffset: {
       width: 0,
       height: 2,
