@@ -129,7 +129,7 @@ const SearchCali = () => {
             onChangeText={setQuery_2}
           />
           
-          <IconButton icon="silverware-clean" size={25} onPress={handleSearch_2} style={{borderRadius: 50,backgroundColor: '#d2c3d7', shadowColor: '#d2c3d7',  shadowRadius: 4,elevation: 5, }}/>
+          <IconButton icon="silverware-clean" size={25} onPress={handleSearch_2} style={{borderRadius: 50,backgroundColor: '#d2c3d7', shadowColor: '#d2c3d7',  shadowRadius: 4, }}/>
           
         
       </View>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    elevation: 3, 
+    
     fontFamily:'Avenir',
 
   },
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    
   },
   addButton: {
     backgroundColor: 'blue',

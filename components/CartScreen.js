@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, SafeAreaView,Text,TouchableOpacity,Image } from 'react-native';
+import { View, ScrollView, StyleSheet, SafeAreaView,Text,TouchableOpacity,Image,Alert } from 'react-native';
 import { Searchbar,Icon } from 'react-native-paper';
 import CartItem from './CartItem'; 
 import axios from 'axios';
+import { useUser } from './UserContext';
+import { path } from './path';
 
 const CartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const { userId } = useUser();
 
   
   const handleSearch = async (searchQuery) => {
@@ -24,11 +27,13 @@ const CartScreen = () => {
       if (response.data && response.data.branded && response.data.common) {
         const brandedItems = response.data.branded.map(item => ({
           name: item.food_name,
-          photo: item.photo && item.photo.thumb 
+          photo: item.photo && item.photo.thumb, 
+          id: item.tag_id
         }));
         const commonItems = response.data.common.map(item => ({
           name: item.food_name,
-          photo: item.photo && item.photo.thumb 
+          photo: item.photo && item.photo.thumb,
+          id: item.tag_id 
         }));
         setCartItems([...brandedItems, ...commonItems]);
       } else {
@@ -39,12 +44,37 @@ const CartScreen = () => {
     }
   };
 
-  const handleCartPress = (productId) => {
-    setModalVisible(true);
-  };
 
-  const handleCloseModal = () => {
-    setModalVisible(false);
+  const saveScannedProduct = async (photo, productName) => {
+    const body = {
+      userId: userId,
+      productName: productName,
+      photoId: photo,
+    };
+
+    try {
+      const request = await fetch(path + '/save_cart', {
+          method: "POST",
+          headers: {
+              'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!request.ok) {
+            throw new Error(`HTTP error! Status: ${request.status}`);
+        }
+
+        const response = await request.json();
+        console.log(response);
+        Alert.alert('Item saved')
+    } catch (error) {
+      
+      Alert.alert('Cannot save')
+        
+        
+    }
   };
 
   
@@ -134,7 +164,7 @@ const CartScreen = () => {
           
           
           {cartItems.map((item, index) => (
-            <CartItem key={index} image={item.photo} productName={item.name}/>
+            <CartItem key={index} image={item.photo} productName={item.name} onPress={() => saveScannedProduct(item.photo, item.name)} />
           ))}
         </ScrollView>
       </View>

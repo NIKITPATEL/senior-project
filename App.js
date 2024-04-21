@@ -15,6 +15,7 @@ import RecipeScreen from './components/RecipeScreen';
 import Scanner from './components/Scanner';
 import CustomAllergy from './components/CustomAllergy';
 import NutrientCalculator from './components/NutrientCalculator';
+import SaveCart from './components/SaveCart';
 
 
 import Footer from './components/Footer';
@@ -49,6 +50,7 @@ const App = () => {
               <Stack.Screen name='scanner' component={Scanner} />
               <Stack.Screen name='customAllergy' component={CustomAllergy} />
               <Stack.Screen name='nutrientcalcul' component={NutrientCalculator} />
+              <Stack.Screen name='cartfood' component={SaveCart} />
           
         
         

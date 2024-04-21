@@ -5,35 +5,29 @@ import PieChart from 'react-native-pie-chart';
 import axios from 'axios';
 import { path } from './path';
 import { useUser } from './UserContext';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useIsFocused } from '@react-navigation/native';
 import { Navigate } from 'react-router-native';
 import { AntDesign } from '@expo/vector-icons';
 
 const HomeScreen = (props) => {
 
-    const[searchQuery,setSearchQuery] = React.useState('');
+    const[searchQuery,setSearchQuery] = useState('');
     const [totalNutrients, setTotalNutrients] = useState({ totalcalories: 0, totalprotein: 0, totalcarbs: 0, totalfats: 0,totalsugar: 0 });
     const {username,userId} = useUser();
     const navigation = useNavigation();
-    const animatedOpacity = React.useState(new Animated.Value(0))[0];
-   
+    const animatedOpacity = useState(new Animated.Value(0))[0];
+    const isFocused = useIsFocused();
 
     
     const totalNutrientValues = [600,700,900,90,800];
     const sliceColor = ['#fbd203', '#ffb300', '#ff9100', '#ff6c00','#ff6c00'];
 
     useEffect(() => {
-      console.log('Home :', userId);
-      const fetchTotalNutrients = async () => {
-        try {
-          const response = await axios.get(path + `/total-nutrients/${userId}`);
-          setTotalNutrients(response.data);
-        } catch (error) {
-          console.error('Error fetching total nutrients:', error);
-        }
-      };
-      fetchTotalNutrients();
-    }, [userId]);
+      if(isFocused){
+        fetchTotalNutrients();
+      }
+      
+    }, [isFocused]);
     console.log(totalNutrients);
 
     // Function to trigger animation
@@ -49,6 +43,17 @@ const HomeScreen = (props) => {
   useEffect(() => {
     startAnimation();
   }, []);
+
+  const fetchTotalNutrients = async () => {
+    try {
+      const response = await axios.get(path + `/total-nutrients/${userId}`);
+      setTotalNutrients(response.data);
+    } catch (error) {
+      console.error('Error fetching total nutrients:', error);
+    }
+  };
+
+
     
     
 
@@ -162,7 +167,7 @@ const HomeScreen = (props) => {
             
               <View style={styles.card}>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('cartfood')}>
                 <View style={styles.cardContainer}>
                   <IconButton icon="food-turkey"  size={40} style={styles.Cardicon} />  
                 </View>

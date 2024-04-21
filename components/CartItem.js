@@ -18,6 +18,8 @@ const CartItem = ({ image, productName,onPress }) => {
   };
 
   
+
+  
   return (
     
         <View style={styles.container}>
@@ -44,7 +46,8 @@ const CartItem = ({ image, productName,onPress }) => {
               icon="cart" 
               size={20} 
               iconColor={isClickedCart ? 'green' : 'grey'} 
-              onPress={onPress} />
+              onPress={onPress}
+               />
             </View>
         </View>
     

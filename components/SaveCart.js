@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useUser } from './UserContext';
 import { path } from './path';
 
-const SaveScannedScreen = () => {
+const SaveCart = () => {
   const navigation = useNavigation();
   const { userId } = useUser();
   const [productNames, setProductNames] = useState([]);
@@ -18,10 +18,10 @@ const SaveScannedScreen = () => {
   const [image,setImage] = useState('');
 
 
-  const handleDeleteItem = async (barcodeid) => {
+  const handleDeleteItem = async (productName) => {
     try {
       //DELETE request to the backend to delete the item with the specified barcodeId
-      await axios.delete(path+`/deletefood/${barcodeid}`);
+      await axios.delete(path+`/deletefood/${productName}`);
       // After deletion, fetch scanned foods again to update the front
       fetchScannedFoods();
     } catch (error) {
@@ -33,7 +33,7 @@ const SaveScannedScreen = () => {
     const fetchScannedFoods = async () => {
       try {
         // Fetch scanned foods using Axios
-        const response = await axios.get(path + `/savefood/${userId}`);
+        const response = await axios.get(path + `/cartfood/${userId}`);
         console.log('Response from backend:', response.data); 
         setProductNames(response.data.scannedFoods);
         console.log(productNames)
@@ -53,23 +53,24 @@ const SaveScannedScreen = () => {
     try {
       const appId = 'c958ac11'; 
       const apiKey = '7d5e826cc223699c79497f63d820cf0a'; 
-      const response = await axios.get(`https://trackapi.nutritionix.com/v2/search/item/?upc=${productName}`, {
+      const response = await axios.get(`https://trackapi.nutritionix.com/v2/search/instant/?query=${productName}`, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'x-app-id': appId,
           'x-app-key': apiKey,
         },
       });
-      if (response.data && response.data.foods) {
-        const product = response.data.foods[0];
-        const brandName = product.brand_name || 'Product Name Not Available';
+      if (response.data && response.data.branded && response.data.common) {
+        const product = response.data.branded[0];
+        const name=  product.food_name;
+        //const brandName = product.brand_name || 'Product Name Not Available';
         const ingredient = product.nf_ingredient_statement || 'Ingredient Not available';
         setImage(product.photo && product.photo.thumb);
       
         setIngredient(ingredient);
 
        
-        setBrandName(brandName);
+        setBrandName(name);
       } else {
         console.error('No data found for the scanned value.');
       }
@@ -95,7 +96,7 @@ const SaveScannedScreen = () => {
     <SafeAreaView>
       <Appbar.Header>
         <Appbar.BackAction onPress={handleBack} />
-        <Appbar.Content title='Saved Food' titleStyle={{ fontWeight: 'bold',fontFamily:'Avenir-Black' }} />
+        <Appbar.Content title='Cart Items' titleStyle={{ fontWeight: 'bold',fontFamily:'Avenir-Black' }} />
       </Appbar.Header>
 
       <View style={{marginTop:10}}>
@@ -110,7 +111,7 @@ const SaveScannedScreen = () => {
                   size={40} 
                   style={{ marginRight: 10 }} 
                 />}
-                right={(props) => <IconButton {...props} icon="delete" onPress={() => handleDeleteItem(barcodeid)} />}
+                right={(props) => <IconButton {...props} icon="delete" />}
               />
             </Card>
           </TouchableOpacity>
@@ -242,4 +243,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SaveScannedScreen;
+export default SaveCart;

@@ -6,7 +6,7 @@ import axios, { all } from 'axios';
 import {Alert, Modal, StyleSheet, Text, Pressable, View,Button,ScrollView,Image,TouchableOpacity,Dimensions,FlatList,Animated, Easing, ImageBackground} from 'react-native';
 
 import { PaperProvider,Dialog,Divider,Icon,IconButton,ProgressBar,MD2Colors,Appbar} from 'react-native-paper'; 
-import {useNavigation } from '@react-navigation/native';
+import {useNavigation,useIsFocused } from '@react-navigation/native';
 
 import { useUser } from './UserContext';
 import { path } from './path';
@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Video, } from 'expo-av';
 import Typewriter from './Typewriter';
+
 
 const { width } = Dimensions.get('window');
 const SCALE = width / 375; 
@@ -97,18 +98,11 @@ export default function Scanner () {
 
     // Requesting for user Preferences 
     useEffect(() => {
-      const fetchPreferences = async () => {
-        try {
-          const response = await axios.get(path+`/userpreferences/${userId}`);
-          setDietaryPreferences(response.data);  
-          setDisplayDiet(response.data.join(','));
-        } catch (error) {
-          console.log(error);
-        }
-      };
-  
-      fetchPreferences();
-    }, [userId]);
+      if(modalVisible){
+        fetchAllergies();
+        fetchPreferences();
+      }
+    }, [modalVisible]);
 
     // Start animation
     useEffect(() => {
@@ -132,19 +126,14 @@ export default function Scanner () {
     
 
     // Requesting for user Allergies
-    useEffect (() => {
-      const fetchAllergies = async () => {
-        try{
-          const response = await axios.get(path+`/userallergies/${userId}`);
-          setAllergyPreferences(response.data);
-          setDisplayAllergy(response.data.join(','));
-          
-        }catch(error){
-          console.log(error);
-        }
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+      if (isFocused) {
+        fetchAllergies();
+        fetchPreferences();
       }
-      fetchAllergies();
-    },[userId]);
+    }, [isFocused]);
 
     useEffect(() => {
       if (modalVisible) {
@@ -173,6 +162,27 @@ export default function Scanner () {
       
       
     }, [unmatchedDietary, unmatchedAllergy]);
+
+    const fetchAllergies = async () => {
+      try{
+        const response = await axios.get(path+`/userallergies/${userId}`);
+        setAllergyPreferences(response.data);
+        setDisplayAllergy(response.data.join(','));
+        console.log('User Allergies hhh:', displayAllergy)
+        
+      }catch(error){
+        console.log(error);
+      }
+    }
+    const fetchPreferences = async () => {
+      try {
+        const response = await axios.get(path+`/userpreferences/${userId}`);
+        setDietaryPreferences(response.data);  
+        setDisplayDiet(response.data.join(','));
+      } catch (error) {
+        console.log(error);
+      }
+    };
     
 
 
@@ -626,7 +636,7 @@ export default function Scanner () {
             Alert.alert('Item saved')
         } catch (error) {
           
-            console.log('Cannot save')
+          Alert.alert('Cannot save')
             
             
         }
@@ -682,36 +692,36 @@ export default function Scanner () {
         userNutrients.forEach(nutrient => {
           switch (nutrient.nutrientName) {
             case 'protein':
-              if (protein !== 'N/A' && (protein < nutrient.min || protein > nutrient.max)) {
+              if (protein !== 'N/A' && (protein < nutrient.min && protein > nutrient.max)) {
                 setProteinOutOfRange(true);
               }
               break;
             case 'carbs':
-              if (carbs !== 'N/A' && (carbs < nutrient.min || carbs > nutrient.max)) {
+              if (carbs !== 'N/A' && (carbs < nutrient.min && carbs > nutrient.max)) {
                 setCarbsOutOfRange(true);
               }
               break;
               break;
             case 'calories':
-              if (calories !== 'N/A' && (calories < nutrient.min || calories > nutrient.max)) {
+              if (calories !== 'N/A' && (calories < nutrient.min && calories > nutrient.max)) {
                 setCaloriesOutOfRange(true);
               }
               break;
             case 'sugar':
-              if (sugar !== 'N/A' && (sugar < nutrient.min || sugar > nutrient.max)) {
+              if (sugar !== 'N/A' && (sugar < nutrient.min && sugar > nutrient.max)) {
                 setSugarOutOfRange(true);
                 
               }
               break;
             case 'fiber':
-              if (carbs !== 'N/A' && (fiber < nutrient.min || fiber > nutrient.max)) {
+              if (carbs !== 'N/A' && (fiber < nutrient.min && fiber > nutrient.max)) {
 
                   setFiberOutOfRange(true);
               }
               break;
 
             case 'fat':
-              if (carbs !== 'N/A' && (fat < nutrient.min || fat > nutrient.max)) {
+              if (carbs !== 'N/A' && (fat < nutrient.min && fat > nutrient.max)) {
                     setFatOutOfRange(true);
               }
               break;
@@ -1056,7 +1066,7 @@ export default function Scanner () {
                     
                     
                     <Pressable style={[styles.button, styles.buttonClose]} onPress={() => handle_closemodal()}>
-                      <Text style={styles.textStyle}>Close Modal</Text>
+                      <Text style={styles.textStyle}>Close</Text>
                     </Pressable>
                   </ScrollView>
                 </View>
@@ -1101,7 +1111,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
+    
   },
   scanner: {
     position: 'absolute',

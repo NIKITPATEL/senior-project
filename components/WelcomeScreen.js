@@ -44,11 +44,11 @@ const WelcomeScreen = () => {
           } catch (error) {
             if (error.response && (error.response.status === 403 || error.response.status === 401)) {
               // Handle 403 or 401 error
-              console.error('Error fetching user information:', error);
+             
               navigation.replace('login'); 
             } else {
               
-              console.error('Error fetching user information:', error);
+              //console.error('Error fetching user information:', error);
             }
           }
         } else {

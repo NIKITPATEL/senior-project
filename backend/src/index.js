@@ -40,19 +40,19 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Route to fetch user information based on the JWT token
+// Route to get user information based on the JWT token
 app.get('/user', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId; 
 
-    // Fetch user information from the database based on userId
+    // get user information from the database based on userId
     const userInfo = await pool.query('SELECT * FROM users WHERE userid = $1', [userId]);
 
     if (userInfo.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Extract the username from the user record
+    // Extract the username from the user 
     const username = userInfo.rows[0].username;
     const userEmail =  userInfo.rows[0].email;
     
@@ -69,7 +69,7 @@ app.get('/savefood/:userId', async (req, res) => {
   try {
     console.log('Fetching scanned foods for user ID:', userId);
 
-    // Query the database to fetch barcode IDs, product names, and photo IDs for the provided user ID
+    //get barcode IDs, product names, and photo IDs for the provided user ID
     
     const result = await pool.query(`
     SELECT barcodeid, productname, photoid
@@ -83,7 +83,30 @@ app.get('/savefood/:userId', async (req, res) => {
     // Send the response to get the saved food
     res.json({ scannedFoods: result.rows });
   } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/cartfood/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    console.log('Fetching scanned foods for user ID:', userId);
+
+    //get barcode IDs, product names, and photo IDs for the provided user ID
     
+    const result = await pool.query(`
+    SELECT productname, photoid
+    FROM CartFoods
+    WHERE userid = $1;
+    
+    `, [userId]);
+
+    console.log('Cart foods retrieved successfully:', result.rows);
+
+    // Send the response to get the saved food
+    res.json({ scannedFoods: result.rows });
+  } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -152,7 +175,7 @@ app.get('/user-nutrients/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    // Retrieve user nutrients from the database for the specified userId
+    // get user nutrients from the database for the  userId
     const { rows } = await pool.query('SELECT * FROM UserNutrients WHERE UserID = $1', [userId]);
 
     res.json(rows);
@@ -201,14 +224,14 @@ app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Retrieve user record from the database based on the provided email
+    // Get user  from the database based on the provided email
     const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
     if (user.rows.length === 0) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Extract hashed password from the user record
+    // Extract hashed password from the user 
     const hashedPasswordFromDb = user.rows[0].password;
 
     // Compare hashed password from the database with the hashed password provided by the user
@@ -222,14 +245,14 @@ app.post('/login', async (req, res) => {
     const userId = user.rows[0].userid; 
     const token = jwt.sign({ userId: userId }, 'i_got', { noTimestamp: true, expiresIn: '1h' });
 
-    // Fetch the user record from the database based on userId
+    
     const userInfo = await pool.query('SELECT * FROM users WHERE userid = $1', [userId]);
 
     if (userInfo.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Extract the username from the user record
+    // Extract the username from the user 
     const username = userInfo.rows[0].username;
 
     console.log('Username:', username);
@@ -262,6 +285,37 @@ app.post('/save_scanned', async (req, res) => {
     const result = await pool.query(
       'INSERT INTO SCANNEDFOODS (UserID, ProductID, ScanTime, BarcodeID, ProductName, PhotoID) VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4, $5) RETURNING *',
       [userId, productId, barcodeId, productName, photoId]
+    );
+
+    console.log('Data inserted successfully:', result.rows[0]);
+
+    
+    res.status(201).json({ success: true, data: result.rows[0] });
+  } catch (error) {
+    
+    res.status(500).json({ success: false, message: 'Error saving scanned food' });
+  }
+});
+
+app.post('/save_cart', async (req, res) => {
+  let { userId, productName, photoId } = req.body;
+  
+
+  try {
+    // First check if the Product or the barcode scanned already exists
+    const existingProduct = await pool.query(
+      'SELECT * FROM CARTFOODS WHERE productName = $1',[productName]
+    );
+
+    if(existingProduct.rows.length > 0){
+      console.log('error sent')
+      return res.status(400).json({ success: false, message: 'Product already saved' });
+    }
+
+    
+    const result = await pool.query(
+      'INSERT INTO CARTFOODS (UserID, ProductName,PhotoID, ScanTime) VALUES ($1, $2, $3,CURRENT_TIMESTAMP) RETURNING *',
+      [userId,productName, photoId]
     );
 
     console.log('Data inserted successfully:', result.rows[0]);
@@ -319,7 +373,7 @@ app.post('/user/allergies', async (req, res) => {
           // Check if the user already has the allergy saved
           const { rows } = await pool.query('SELECT * FROM UserAllergens WHERE  UserId = $1 and AllergenID = (SELECT AllergenID FROM Allergens WHERE AllergenName = $2)', [userId, allergyName]);
           if (rows.length === 0) {
-              // If the user doesn't have the allergy, insert it
+              // If the user doesn't have the allergy insert it
               const { rows: allergensRows } = await pool.query('SELECT * FROM Allergens WHERE AllergenName =$1', [allergyName]);
               if (allergensRows.length > 0) {
                   const allergenId = allergensRows[0].allergenid;
@@ -333,7 +387,7 @@ app.post('/user/allergies', async (req, res) => {
           // Check if the user has the allergy saved
           const { rows } = await pool.query('SELECT * FROM UserAllergens WHERE  UserId = $1 and AllergenID = (SELECT AllergenID FROM Allergens WHERE AllergenName = $2)', [userId, allergyName]);
           if (rows.length > 0) {
-              // If the user has the allergy, delete it
+              // If the user has the allergy delete it
               const { rows: allergensRows } = await pool.query('SELECT * FROM Allergens WHERE AllergenName =$1', [allergyName]);
               if (allergensRows.length > 0) {
                   const allergenId = allergensRows[0].allergenid;
@@ -365,7 +419,7 @@ app.post('add-meal',async (req,res) => {
   }
 })
 
-// Add a route handler for adding user nutrients
+// for adding user nutrients
 app.post('/user-nutrients', async (req, res) => {
   try {
     const { userId, nutrient_name, nutrient_min, nutrient_max } = req.body;
@@ -392,15 +446,15 @@ app.post('/add-meal', async (req, res) => {
   const { userId, calories, protein, carbs, fats, sugar } = req.body;
 
   try {
-    // Execute the INSERT query to add the meal
+    // add the meal
     const queryText = 'INSERT INTO nutrients (UserID, calories, protein, carbs, fats, sugar) VALUES ($1, $2, $3, $4, $5, $6)';
     const values = [userId, calories, protein, carbs, fats, sugar];
     await pool.query(queryText, values);
 
-    // Send response indicating success
+    
     res.status(200).send('Meal added successfully');
   } catch (error) {
-    // If an error occurs, send an error response
+    
     console.error('Error adding meal:', error);
     res.status(500).send('Error adding meal');
   }
@@ -439,7 +493,7 @@ app.delete('/deletefood/:barcodeid', async (req, res) => {
 // Test route to check database connection
 app.get("/test-db-connection", async (req, res) => {
   try {
-    // Execute a simple query to check if the database connection works
+    //  to check if the database connection works
     const result = await pool.query("SELECT 1");
     
     res.status(200).json({ message: "Database connection successful" });

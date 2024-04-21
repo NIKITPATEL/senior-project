@@ -98,7 +98,7 @@ const CustomAllergy = () => {
               selectedValue={minValue}
               onValueChange={(itemValue, itemIndex) => setMinValue(itemValue)}
             >
-              {Array.from({ length: 10000 }, (_, index) => index + 1).map((value) => (
+              {Array.from({ length: 10000 }, (_, index) => index).map((value) => (
                 <Picker.Item key={value} label={value.toString()} value={value} />
               ))}
           </Picker>
@@ -112,7 +112,7 @@ const CustomAllergy = () => {
               selectedValue={maxValue}
               onValueChange={(itemValue, itemIndex) => setMaxValue(itemValue)}
             >
-              {Array.from({ length: 10000}, (_, index) => index + 1).map((value) => (
+              {Array.from({ length: 10000}, (_, index) => index).map((value) => (
                 <Picker.Item key={value} label={value.toString()} value={value} />
               ))}
             </Picker>

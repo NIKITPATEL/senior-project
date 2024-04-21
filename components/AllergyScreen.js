@@ -90,30 +90,30 @@ const Allergy = () => {
     const allergy = [
         { name: 'Eggs', icon: 'egg' },
         { name: 'Fish', icon: 'fish' },
-        { name: 'Milk', icon: 'fish' },
-        { name: 'Onions', icon: 'fish' },
-        { name: 'Wheat', icon: 'fish' },
+        { name: 'Milk', icon: 'water' },
+        { name: 'Onions', icon: 'circle' },
+        { name: 'Wheat', icon: 'grain' },
         { name: 'Corn', icon: 'corn' },
         {
           name: 'Tree nuts',
           icon: 'peanut',
           options: [
-              { name: 'Peanuts', icon: 'almonds' },
-              { name: 'Almonds', icon: 'almonds' },
-              { name: 'Walnuts', icon: 'walnuts' },
+              { name: 'Peanuts', icon: '' },
+              { name: 'Almonds', icon: '' },
+              { name: 'Walnuts', icon: '' },
               
           ]
         },
-        { name:'Sellfish',icon:'corn',
+        { name:'Sellfish',icon:'fish',
           options: [
             { name:'Shrimp',icon:''},
             { name:'Crab',icon:''},
             { name:'Lobster',icon:''},
           ]
         },
-        { name:'Sesame', icon: ''},
-        { name:'Soy',icon:''},
-        { name:'Mustard',icon:''},
+        { name:'Sesame', icon: 'seed'},
+        { name:'Soy',icon:'cup'},
+        { name:'Mustard',icon:'water'},
         
 
     ]

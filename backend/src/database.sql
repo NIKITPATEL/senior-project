@@ -25,6 +25,17 @@ CREATE TABLE ScannedFoods (
     );
 
 
+    CREATE TABLE CartFoods (
+    ScanID SERIAL PRIMARY KEY,
+    UserID INT NOT NULL,
+    ProductName VARCHAR(255),                                            
+    PhotoID VARCHAR(255),
+    ScanTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+
+    );
+
+
 
 
 CREATE TABLE UserNutrients (
