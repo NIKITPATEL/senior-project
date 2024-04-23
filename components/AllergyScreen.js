@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView,Dimensions,Modal,Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView,Dimensions,Modal,Alert,TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import { Appbar, Avatar,IconButton,List,Button } from 'react-native-paper';
 import { useUser } from './UserContext';
@@ -11,6 +11,7 @@ const Allergy = () => {
     const {userId} = useUser();
     const [userAllergies, setUserAllergies] = useState([]);
     const [selectedAllergies, setSelectedAllergies] = useState([]);
+    const [query,setQuery] = useState('');
 
     useEffect(() => {
         
@@ -19,7 +20,7 @@ const Allergy = () => {
                 const response = await axios.get(path + `/userallergies/${userId}`);
                 const userAllergies = response.data;
                 
-                
+                setUserAllergies(userAllergies);
                 const mergedAllergies = Array.from(new Set([...selectedAllergies, ...userAllergies]));
                 setSelectedAllergies(mergedAllergies);
             } catch (error) {
@@ -29,23 +30,6 @@ const Allergy = () => {
         fetchUserAllergies();
     }, [userId]);
     
-    useEffect(() => {
-        
-        const fetchUserAllergies = async () => {
-            try {
-                const response = await axios.get(path + `/userallergies/${userId}`);
-                const userAllergies = response.data;
-                setUserAllergies(userAllergies);
-            } catch (error) {
-                console.error('Error fetching user allergies:', error);
-            }
-        };
-        fetchUserAllergies();
-    }, [userId]);
-    
-    
-   
-
     const handleback = () => {
         navigation.goBack();
     }
@@ -56,7 +40,23 @@ const Allergy = () => {
       } else {
           setSelectedAllergies([...selectedAllergies, allergyName]);
       }
-    };  
+    };
+    
+    const addAllergy = async () => {
+        if (query.trim() === '') {
+            Alert.alert('Error', 'Please enter an ingredient name.');
+            return;
+          }
+        try {
+            const response = await axios.post(path+'/addAllergy',{
+                allergenName:query
+            });
+            setQuery('');
+            Alert.alert('Allergy added successfully')
+        }catch(error){
+            console.log(error);
+        }
+    }
 
     const handleSave = async () => {
         try {
@@ -132,6 +132,7 @@ const Allergy = () => {
                 
                 
                 <ScrollView style={styles.scroll}>
+
                 <View style={styles.container}>
                     <List.Section title="Allergies" titleStyle={{fontFamily:'Avenir',fontWeight:'bold'}}>
                         {allergy.map(({ name, icon, options }, index) => (
@@ -171,6 +172,20 @@ const Allergy = () => {
                         ))}
                     </List.Section>
                 </View>
+                <View style={{flexDirection:'row',alignItems:'center',marginBottom:10}}>
+        
+                    <TextInput
+                    style={styles.input}
+                    placeholder="Enter Ingredient..."
+                    value={query}
+                    onChangeText={setQuery}
+                    
+                    />
+                    
+                    <Button onPress={addAllergy}> Add</Button>
+                    
+                
+                </View>
             </ScrollView>
             <Button onPress={handleSave} mode='contained'style={{margin:10}}>Save</Button>
 
@@ -193,6 +208,26 @@ const styles = StyleSheet.create({
     scroll:{
       height:'73%',
     },
+    input: {
+        flex:1,
+        height: 40,
+        paddingHorizontal: 10,
+        marginBottom: 10,
+        fontSize: 16,
+        backgroundColor: '#fff',
+        color: '#000',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        
+        fontFamily:'Avenir',
+    
+      },
 });
 
 export default Allergy;

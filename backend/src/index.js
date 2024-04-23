@@ -461,6 +461,19 @@ app.post('/add-meal', async (req, res) => {
 });
 
 
+app.post('/addAllergy', async (req, res) => {
+  const { allergenName } = req.body;
+  try {
+    const result = await pool.query('INSERT INTO Allergens (AllergenName) VALUES ($1) RETURNING *;', [allergenName]);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error adding allergen', error);
+    res.status(500).send('Error adding allergen');
+  }
+});
+
+
+
 
 
 

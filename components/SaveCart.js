@@ -61,7 +61,9 @@ const SaveCart = () => {
         },
       });
       if (response.data && response.data.branded && response.data.common) {
-        const product = response.data.branded[0];
+        const product = response.data.branded
+        
+        [0];
         const name=  product.food_name;
         //const brandName = product.brand_name || 'Product Name Not Available';
         const ingredient = product.nf_ingredient_statement || 'Ingredient Not available';

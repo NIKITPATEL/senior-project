@@ -11,7 +11,6 @@ import {useNavigation,useIsFocused } from '@react-navigation/native';
 import { useUser } from './UserContext';
 import { path } from './path';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Video, } from 'expo-av';
 import Typewriter from './Typewriter';
 
@@ -1001,7 +1000,7 @@ export default function Scanner () {
                           </TouchableOpacity>
                           {isDietExpanded && (
                             <View style={styles.expandedContent}>
-                              {/* Content for Diet Preferences */}
+                              
                               <Text style={{fontWeight:'300', fontFamily:'Avenir-Black'}}>{displayDiet}</Text>
                             </View>
                           )}
@@ -1058,12 +1057,6 @@ export default function Scanner () {
                             </TouchableOpacity>
                         )}
                     />
-
-                    
-
-                    
-                    
-                    
                     
                     <Pressable style={[styles.button, styles.buttonClose]} onPress={() => handle_closemodal()}>
                       <Text style={styles.textStyle}>Close</Text>
@@ -1416,6 +1409,7 @@ const styles = StyleSheet.create({
       
   
   },
+
   // Styles for product name container
   productNameContainer: {
     position: 'absolute',
