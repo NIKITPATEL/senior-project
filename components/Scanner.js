@@ -58,7 +58,20 @@ export default function Scanner () {
     const [proteinOutOfRange, setProteinOutOfRange] = useState(false);
     const [sugarOutOfRange, setSugarOutOfRange] = useState(false);
     const [fiberOutOfRange, setFiberOutOfRange] = useState(false);
+    const [sodiumOutOfRange, setSodiumOutOfRange] = useState(false);
+    const [cholesOutOfRange, setCholesOutOfRange] = useState(false);
+    const [calciumOutOfRange, setCalciumOutOfRange] = useState(false);
+    const [ironOutOfRange, setIronOutOfRange] = useState(false);
+    const [potassiumOutOfRange, setPotassiumOutOfRange] = useState(false);
     const [rating,setRating] = useState('');
+    const [calcium, setCalcium] = useState('N/A');
+    const [iron, setIron] = useState('');
+    const [potassium, setPotassium] = useState('');
+    const [sodium, setSodium] = useState('N/A');
+    const [cholesterol, setCholesterol] = useState('N/A');
+
+
+    
 
 
 
@@ -231,7 +244,12 @@ export default function Scanner () {
               setProtein(product.nf_protein || 'N/A');
               setSugar(product.nf_sugars || 'N/A');
               setFiber(product.nf_dietary_fiber || 'N/A');
-              setRating(product.nf_rating || 'N/A')
+              setRating(product.nf_rating || 'N/A');
+              setSodium(product.nf_sodium || 'N/A');       
+              setCholesterol(product.nf_cholesterol || 'N/A');
+              setCalcium(product.nf_calcium || 'N/A');      
+              setIron(product.nf_iron || 'N/A');             
+              setPotassium(product.nf_potassium || 'N/A'); 
 
               //console.log('Ingredients: ',ingredients)
               setBrandName(productName);
@@ -691,39 +709,71 @@ export default function Scanner () {
         userNutrients.forEach(nutrient => {
           switch (nutrient.nutrientName) {
             case 'protein':
-              if (protein !== 'N/A' && (protein < nutrient.min && protein > nutrient.max)) {
+              if (protein !== 'N/A' && (protein < nutrient.min || protein > nutrient.max)) {
                 setProteinOutOfRange(true);
               }
               break;
             case 'carbs':
-              if (carbs !== 'N/A' && (carbs < nutrient.min && carbs > nutrient.max)) {
+              if (carbs !== 'N/A' && (carbs < nutrient.min || carbs > nutrient.max)) {
                 setCarbsOutOfRange(true);
               }
               break;
               break;
             case 'calories':
-              if (calories !== 'N/A' && (calories < nutrient.min && calories > nutrient.max)) {
+              if (calories !== 'N/A' && (calories < nutrient.min || calories > nutrient.max)) {
                 setCaloriesOutOfRange(true);
               }
               break;
             case 'sugar':
-              if (sugar !== 'N/A' && (sugar < nutrient.min && sugar > nutrient.max)) {
+              if (sugar !== 'N/A' && (sugar < nutrient.min || sugar > nutrient.max)) {
                 setSugarOutOfRange(true);
                 
               }
               break;
             case 'fiber':
-              if (carbs !== 'N/A' && (fiber < nutrient.min && fiber > nutrient.max)) {
+              if (fiber !== 'N/A' && (fiber < nutrient.min || fiber > nutrient.max)) {
 
                   setFiberOutOfRange(true);
               }
               break;
 
             case 'fat':
-              if (carbs !== 'N/A' && (fat < nutrient.min && fat > nutrient.max)) {
+              if (fat !== 'N/A' && (fat < nutrient.min || fat > nutrient.max)) {
                     setFatOutOfRange(true);
               }
               break;
+
+            case 'sodium':
+              if (sodium !== 'N/A' && (sodium < nutrient.min || sodium > nutrient.max)) {
+                    setSodiumOutOfRange(true);
+              }
+              break;
+
+            case 'cholesterol':
+              if (cholesterol !== 'N/A' && (fat < nutrient.min || fat > nutrient.max)) {
+                    setCholesOutOfRange(true);
+              }
+              break;  
+
+              case 'calcium':
+              if (calcium !== 'N/A' && (calcium < nutrient.min || calcium > nutrient.max)) {
+                    setCalciumOutOfRange(true);
+              }
+              break;
+
+              case 'iron':
+              if (iron !== 'N/A' && (iron < nutrient.min || iron > nutrient.max)) {
+                    setIronOutOfRange(true);
+              }
+              break;
+
+              case 'potassium':
+              if (potassium !== 'N/A' && (potassium < nutrient.min || potassium > nutrient.max)) {
+                    setPotassiumOutOfRange(true);
+              }
+              break;
+
+            
 
            
             default:
@@ -749,11 +799,16 @@ export default function Scanner () {
           setUnmatchedAllergy([]);
           setUnmatchedDietary([]);
           setCaloriesOutOfRange(false);
-        setCarbsOutOfRange(false);
-        setProteinOutOfRange(false);
-        setSugarOutOfRange(false);
-        setFiberOutOfRange(false);
-        setFatOutOfRange(false);
+          setCarbsOutOfRange(false);
+          setProteinOutOfRange(false);
+          setSugarOutOfRange(false);
+          setFiberOutOfRange(false);
+          setFatOutOfRange(false);
+          setSodiumOutOfRange(false);
+          setCholesOutOfRange(false);
+          setCalciumOutOfRange(false);
+          setIronOutOfRange(false);
+          setPotassiumOutOfRange(false);
     }
 
     
@@ -870,7 +925,7 @@ export default function Scanner () {
                         <View style={{flexDirection: 'row', alignItems: 'center' }}>
                             <IconButton iconColor='gold' icon="star" size={24}/>
                             <View style={styles.ratingCapsule}>
-                              <Text style={styles.ratingText}>{rating}</Text>
+                              <Text style={styles.ratingText}>4.5</Text>
                             </View>
                             
                         </View>
@@ -917,6 +972,22 @@ export default function Scanner () {
                         <View style={[styles.nutrientCapsule, fiberOutOfRange && styles.outOfRange]}>
                           <Text style={styles.nutrientTitle}>Fiber</Text>
                           <Text style={styles.nutrientValue}>{fiber}g</Text>
+                        </View>
+                        <View style={[styles.nutrientCapsule, sodiumOutOfRange && styles.outOfRange]}>
+                          <Text style={styles.nutrientTitle}>Sodium</Text>
+                          <Text style={styles.nutrientValue}>{sodium}g</Text>
+                        </View>
+                        <View style={[styles.nutrientCapsule, cholesOutOfRange && styles.outOfRange]}>
+                          <Text style={styles.nutrientTitle}>chols</Text>
+                          <Text style={styles.nutrientValue}>{cholesterol}g</Text>
+                        </View>
+                        <View style={[styles.nutrientCapsule, calciumOutOfRange && styles.outOfRange]}>
+                          <Text style={styles.nutrientTitle}>calcium</Text>
+                          <Text style={styles.nutrientValue}>{calcium}g</Text>
+                        </View>
+                        <View style={[styles.nutrientCapsule, potassiumOutOfRange && styles.outOfRange]}>
+                          <Text style={styles.nutrientTitle}>potassium</Text>
+                          <Text style={styles.nutrientValue}>{potassium}g</Text>
                         </View>
                       </View>
                     </ScrollView>
@@ -1145,7 +1216,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
     width: '100%',  
     
   },
@@ -1163,7 +1233,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 1.5, 
     shadowRadius: 15,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 5,
+    
+  
   },
   productDetails: {
     flex: 1, 
@@ -1230,7 +1301,7 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 20,
     padding: 10,
-    elevation: 2,
+    
   },
   buttonClose: {
     backgroundColor: '#2196F3',
@@ -1269,7 +1340,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5 * SCALE, 
     shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    
     marginHorizontal: 4 * SCALE, 
 
 },
@@ -1378,7 +1449,7 @@ const styles = StyleSheet.create({
       },
       shadowOpacity: 0.10,
       shadowRadius: 3.84,
-      elevation: 5,
+      
       
   },
   productImage: {

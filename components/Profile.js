@@ -99,7 +99,7 @@ export default function Profile() {
 
           <TouchableOpacity
             onPress={() => {
-              // handle onPress
+              navigation.navigate('editprofile')
             }}>
             <View style={styles.profileAction}>
               <Text style={styles.profileActionText}>Edit Profile</Text>

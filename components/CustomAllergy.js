@@ -15,6 +15,11 @@ const nutrientOptions = [
   { label: 'Sugar', value: 'sugar' },
   { label: 'Fiber', value: 'fiber' },
   { label: 'Calories', value: 'calories' },
+  { label: 'Sodium', value: 'sodium' },
+  { label: 'Cholesterol', value: 'cholesterol' },
+  { label: 'Calcium', value: 'calcium' },
+  { label: 'Iron', value: 'iron' },
+  { label: 'Potassium', value: 'potassium' },
 ];
 
 const CustomAllergy = () => {

@@ -88,32 +88,117 @@ const Allergy = () => {
     
 
     const allergy = [
-        { name: 'Eggs', icon: 'egg' },
-        { name: 'Fish', icon: 'fish' },
-        { name: 'Milk', icon: 'water' },
-        { name: 'Onions', icon: 'circle' },
-        { name: 'Wheat', icon: 'grain' },
-        { name: 'Corn', icon: 'corn' },
-        {
-          name: 'Tree nuts',
-          icon: 'peanut',
-          options: [
-              { name: 'Peanuts', icon: '' },
-              { name: 'Almonds', icon: '' },
-              { name: 'Walnuts', icon: '' },
-              
-          ]
-        },
-        { name:'Sellfish',icon:'fish',
-          options: [
-            { name:'Shrimp',icon:''},
-            { name:'Crab',icon:''},
-            { name:'Lobster',icon:''},
-          ]
-        },
-        { name:'Sesame', icon: 'seed'},
-        { name:'Soy',icon:'cup'},
-        { name:'Mustard',icon:'water'},
+        
+        { name: 'Milk', icon: 'cow', options: [
+            { name: 'Cow milk', icon: '' },
+            { name: 'Goat milk', icon: '' },
+            { name: 'Sheep milk', icon: '' },
+            { name: 'Buffalo milk', icon: '' },
+            { name: 'Cheese', icon: '' },
+            { name: 'Yogurt', icon: '' },
+            { name: 'Milk', icon: '' }
+        ]},
+        { name: 'Eggs', icon: 'egg', options: [
+            { name: 'Chicken eggs', icon: '' },
+            { name: 'Duck eggs', icon: '' },
+            { name: 'Quail eggs', icon: '' },
+            { name: 'Eggs', icon: '' }
+        ]},
+        { name: 'Fish', icon: 'fish', options: [
+            { name: 'Salmon', icon: 'fish' },
+            { name: 'Tuna', icon: 'fish' },
+            { name: 'Cod', icon: 'fish' },
+            { name: 'Anchovies', icon: 'fish' },
+            { name: 'Halibut', icon: 'fish' }
+        ]},
+        { name: 'Peanuts', icon: 'peanut' },
+        { name: 'Sesame', icon: 'grain' },
+        {name:'Corn',icon:'corn'},
+        { name: 'Vegetables', icon: 'carrot', options: [
+            { name: 'Carrots', icon: '' },
+            { name: 'Celery', icon: '' },
+            { name: 'Tomatoes', icon: '' },
+            { name: 'Peppers', icon: '' },
+            { name: 'Garlic', icon: '' },
+            { name: 'Onions', icon: '' },
+            { name: 'Eggplants', icon: '' },
+            { name: 'Bell peppers', icon: '' },
+            { name: 'Hot peppers', icon: '' },
+
+        ]},
+        { name: 'Oil', icon: 'water', options: [
+            { name: 'Peanut Oil', icon: '' },
+            { name: 'Soybean Oil', icon: '' },
+            { name: 'Corn Oil', icon: '' },
+            { name: 'Canola Oil', icon: '' },
+            { name: 'Palm Oil', icon: '' },
+            { name: 'Coconut Oil', icon: '' },
+            { name: 'Sunflower Oil', icon: '' },
+            { name: 'Fish Oil', icon: '' },
+            { name: 'Sesame Oil', icon: '' },
+            { name: 'Olive Oil', icon: '' },
+
+        ]},
+        { name: 'Shellfish', icon: 'fish', options: [
+            { name: 'Shrimp', icon: '' },
+            { name: 'Crab', icon: '' },
+            { name: 'Lobster', icon: '' },
+            { name: 'Mussels', icon: '' },
+            { name: 'Oysters', icon: '' },
+            { name: 'Scallops', icon: '' }
+        ]},
+        { name: 'Tree Nuts', icon: 'tree', options: [
+            { name: 'Almonds', icon: '' },
+            { name: 'Walnuts', icon: '' },
+            { name: 'Hazelnuts', icon: '' },
+            { name: 'Cashews', icon: '' },
+            { name: 'Pecans', icon: '' },
+            { name: 'Pistachios', icon: '' },
+            { name: 'Brazil nuts', icon: '' },
+            { name: 'Macadamia nuts', icon: '' }
+        ]},
+        { name: 'Wheat', icon: 'grain', options: [
+            { name: 'Bread Wheat', icon: '' },
+            { name: 'Durum Wheat', icon: '' },
+            { name: 'Spelt', icon: '' },
+            { name: 'Kamut', icon: '' },
+            { name: 'Wheat', icon: '' }
+        ]},
+        { name: 'Soybeans', icon: '', options: [
+            { name: 'Soy milk', icon: '' },
+            { name: 'Tofu', icon: '' },
+            { name: 'Soy sauce', icon: '' },
+            { name: 'Edamame', icon: '' },
+            { name: 'Tempeh', icon: '' }
+        ]},
+        { name: 'Fruits', icon: 'apple', options: [
+            { name: 'Apples', icon: '' },
+            { name: 'Oranges', icon: '' },
+            { name: 'Bananas', icon: '' },
+            { name: 'Peaches', icon: '' },
+            { name: 'Mangoes', icon: '' }
+        ]},
+        { name: 'Spices', icon: '', options: [
+            { name: 'Cinnamon', icon: '' },
+            { name: 'Mustard', icon: '' },
+            { name: 'Chili pepper', icon: '' }
+        ]},
+        { name: 'Preservatives', icon: '', options: [
+            { name: 'Butylated hydroxyanisole', icon: '' },
+            { name: 'Butylated hydroxytoluene', icon: '' },
+            { name: 'Propyl gallate', icon: '' },
+            { name: 'Sodium benzoate', icon: '' },
+            
+        ]},
+        { name: 'Sweeteners', icon: '', options: [
+            { name: 'Aspartame', icon: '' },
+            { name: 'Sucralose', icon: '' },
+            { name: 'High fructose corn syrup', icon: '' },
+            { name: 'Stevia', icon: '' },
+            { name: 'Sorbitol', icon: '' }
+        ]},
+
+
         
 
     ]

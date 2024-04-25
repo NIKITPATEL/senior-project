@@ -186,6 +186,18 @@ app.get('/user-nutrients/:userId', async (req, res) => {
 });
 
 
+app.get('/editprofile/:userId',async(req,res) => {
+  try{
+    const userId = req.params.userId;
+
+    const result = await pool.query('SELECT Username, Email, FirstName, LastName FROM Users WHERE UserID = $1',[userId]);
+    res.json(result.rows[0]);
+  }catch(error){
+    console.error(error);
+  }
+})
+
+
 
 
 

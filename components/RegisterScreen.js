@@ -15,7 +15,7 @@ const RegisterScreen = () => {
 
     const handleRegister = async () => {
         try {
-            await axios.post(`${path}/register`, { username, email, password, firstname, lastname });
+            await axios.post(path+ '/register', { username, email, password, firstname, lastname });
             Alert.alert('Success', 'User registered successfully');
             navigation.navigate('login');
         } catch (error) {

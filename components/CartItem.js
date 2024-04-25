@@ -72,11 +72,13 @@ const styles = StyleSheet.create({
     aspectRatio: 1, 
     overflow: 'hidden', 
     borderRadius: 10, 
+    
   },
   image: {
     width: '100%',
     height: '100%', 
     resizeMode: 'cover',
+    
   },
   productName: {
     
