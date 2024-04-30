@@ -586,11 +586,11 @@ export default function Scanner () {
                   }));
                   setCartItems([...brandedItems, ...commonItems]);
                 } else {
-                  console.error('No food items found in the response');
+                  //console.error('No food items found in the response');
                 }
                       console.log(cartItems)
                 } else {
-                    console.error('No data found for the scanned value.');
+                    //console.error('No data found for the scanned value.');
                 }
             } catch (error) {
                 console.error('Error fetching data:', error.message);

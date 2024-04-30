@@ -126,7 +126,7 @@ const ExploreScreen = () => {
     setSelectedDish(null);
     setModalVisible(false);
   };
-  
+
   const dishes = [
     {
           name: 'Grilled Salmon',
@@ -228,7 +228,7 @@ const ExploreScreen = () => {
         ]
     },
     {
-        name: 'Classic Beef Stroganoff',
+        name: 'Beef Stroganoff',
         rating: 4.3,
         timeToMake: '40 min',
         servings: 4,
@@ -243,7 +243,7 @@ const ExploreScreen = () => {
         ]
     },
     {
-        name: 'Butternut Squash Soup',
+        name: 'Butternut Soup',
         rating: 4.8,
         timeToMake: '1 hr',
         servings: 4,
@@ -274,7 +274,7 @@ const ExploreScreen = () => {
         ]
     },
     {
-        name: 'Lemon Herb Roasted Chicken',
+        name: 'Lemon Herb Chicken',
         rating: 4.5,
         timeToMake: '1 hr 30 min',
         servings: 4,
@@ -334,7 +334,7 @@ const ExploreScreen = () => {
             'Serve immediately with extra lemon wedges on the side.'
         ]
     },{
-      name: 'Grilled Cheese Sandwich',
+      name: 'Grilled Cheese',
       rating: 4.2,
       timeToMake: '10 min',
       servings: 1,
@@ -432,7 +432,7 @@ const ExploreScreen = () => {
       ]
   },
   {
-      name: 'Mediterranean Quinoa Salad',
+      name: 'Quinoa Salad',
       rating: 4.4,
       timeToMake: '30 min',
       servings: 4,
@@ -462,7 +462,7 @@ const ExploreScreen = () => {
       ]
   },
   {
-      name: 'Baked Cod with Lemon Butter',
+      name: 'Baked Cod ',
       rating: 4.6,
       timeToMake: '25 min',
       servings: 4,

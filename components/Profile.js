@@ -170,7 +170,7 @@ export default function Profile() {
                         break;
                       
                       case 'More':
-                        navigation.navigate('nutrientcalcul');
+                        navigation.navigate('foodai');
                         break;
                         
                       

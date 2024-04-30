@@ -171,8 +171,8 @@ const HomeScreen = (props) => {
                 <View style={styles.cardContainer}>
                   <IconButton icon="food-turkey"  size={40} style={styles.Cardicon} />  
                 </View>
-                <Text style={styles.cardText}>Meals</Text>
-                <Text style={styles.cardText2}>Saved Meals</Text>
+                <Text style={styles.cardText}>Cart</Text>
+                <Text style={styles.cardText2}>Cart Items</Text>
                 
                 <View style={styles.progressBarContainer}>
                   <ProgressBar
