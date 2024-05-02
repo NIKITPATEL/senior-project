@@ -17,6 +17,7 @@ import CustomAllergy from './components/CustomAllergy';
 import NutrientCalculator from './components/NutrientCalculator';
 import SaveCart from './components/SaveCart';
 import EditProfile from './components/EditProfile';
+import FoodAi from './components/FoodAi';
 
 
 import Footer from './components/Footer';
@@ -53,6 +54,8 @@ const App = () => {
               <Stack.Screen name='nutrientcalcul' component={NutrientCalculator} />
               <Stack.Screen name='cartfood' component={SaveCart} />
               <Stack.Screen name='editprofile' component={EditProfile} />
+              <Stack.Screen name='foodai' component={FoodAi} />
+
           
         
         

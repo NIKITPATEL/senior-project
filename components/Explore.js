@@ -574,6 +574,8 @@ const ExploreScreen = () => {
                 </View>
             </View>
 
+            <Button onPress={()=>{navigation.navigate('foodai')}} mode='contained'style={{margin:10}}>Food AI</Button>
+
             <View style={styles.capsule}>
                 <Image source={require('../assets/hand.png')} style={styles.capsuleImage} />
                 <View style={styles.capsuleContent}>
@@ -585,7 +587,7 @@ const ExploreScreen = () => {
                 </View>
             </View>
             
-            <Button onPress={()=>{navigation.navigate('SearchCali')}} mode='contained'style={{margin:10}}>Calories</Button>
+            
             
             
 

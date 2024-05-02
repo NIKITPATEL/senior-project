@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowColor: '#FFFFFF',
     shadowOpacity: 0.8,
-    elevation: 5, 
+     
   },
   brandName: {
     fontSize: 24,

@@ -280,7 +280,7 @@ export default function Scanner () {
               const isProductDairyFree = (ingredientStatement) => {
                 const lowercaseIngredientStatement = ingredientStatement.toLowerCase();
                 
-                if (lowercaseIngredientStatement.includes('gluten-free')) {
+                if (lowercaseIngredientStatement.includes('dairy-free')) {
                     return true; 
                 }
                 

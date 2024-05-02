@@ -165,6 +165,7 @@ const Allergy = () => {
             { name: 'Wheat', icon: '' }
         ]},
         { name: 'Soybeans', icon: '', options: [
+            {name:'Soy',icon:''},
             { name: 'Soy milk', icon: '' },
             { name: 'Tofu', icon: '' },
             { name: 'Soy sauce', icon: '' },
